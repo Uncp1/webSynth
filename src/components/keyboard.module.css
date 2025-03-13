@@ -1,0 +1,36 @@
+.container {
+  padding: 20px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.keyboard {
+  position: relative;
+  width: 840px; /* 14 белых клавиш по 60px */
+  height: 200px;
+}
+
+.key_white {
+  position: absolute;
+  width: 60px;
+  height: 200px;
+  background: white;
+  border: 1px solid black;
+  box-sizing: border-box;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.key_black {
+  position: absolute;
+  width: 40px;
+  height: 120px;
+  background: black;
+  color: white;
+  border: 1px solid #333;
+  z-index: 2;
+  margin-left: -20px;
+  cursor: pointer;
+}
