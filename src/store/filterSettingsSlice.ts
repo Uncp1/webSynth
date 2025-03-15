@@ -7,7 +7,7 @@ export interface FilterSettings {
 }
 const initialState: FilterSettings = {
   type: 'lowpass',
-  frequency: 70000,
+  frequency: 7000,
   Q: 1,
 };
 

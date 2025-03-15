@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
+    "clsx": "^2.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-knob-headless": "0.3.0",
     "react-redux": "^9.2.0",
     "tone": "^15.0.4"
   },

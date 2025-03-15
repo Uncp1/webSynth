@@ -1,0 +1,53 @@
+.wrapper {
+  height: 64px;
+  width: 64px;
+  border-radius: 50%;
+}
+
+.stone {
+  background-color: #d6d3d1; /* bg-stone-300 */
+}
+
+.pink {
+  background-color: #fbcfe8; /* bg-pink-300 */
+}
+
+.green {
+  background-color: #bbf7d0; /* bg-green-300 */
+}
+
+.sky {
+  background-color: #bae6fd; /* bg-sky-300 */
+}
+
+.inner {
+  height: 100%;
+  width: 100%;
+}
+
+.line {
+  position: relative;
+  left: 50%;
+  top: 0;
+  height: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background-color: #1c1917; /* bg-stone-950 */
+}
+
+.container {
+  display: flex; /* flex */
+  flex-direction: column; /* flex-col */
+  gap: 16px; /* gap-0.5 (approximately 2px) */
+  justify-content: center; /* justify-center */
+  align-items: center; /* items-center */
+  font-size: 0.75rem; /* text-xs */
+  user-select: none; /* select-none */
+  outline: none; /* outline-none */
+}
+
+.container:focus-within {
+  outline: 1px solid #d6d3d1; /* focus-within:outline-1 & focus-within:outline-stone-300 */
+  outline-offset: 4px; /* focus-within:outline-offset-4 */
+}
