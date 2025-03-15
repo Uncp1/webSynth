@@ -1,0 +1,36 @@
+/* SynthSettings.module.css */
+.synthSettings {
+  background-color: #282c34;
+  padding: 20px;
+  border-radius: 8px;
+  color: #ffffff;
+  max-width: 800px;
+  margin: 20px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.synthSettings__title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.synthSettings__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.synthSettings__control {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.synthSettings__control label {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+}
