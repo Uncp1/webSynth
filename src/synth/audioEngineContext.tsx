@@ -18,11 +18,15 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     (state: RootState) => state.filterSettings
   );
 
-  // Создаем экземпляры один раз при монтировании
+  // Создаем экземпляры один раз при монтировании.
   const synth = useMemo(
     () =>
       new Tone.AMSynth({
-        // oscillator: { type: AMOscillatorOptions },
+        // Передаем тип осциллятора как строку, что допустимо для AMSynth
+        oscillator: {
+          type: 'square',
+        },
+        detune: synthSettings.detune,
         envelope: {
           attack: synthSettings.envelopeAttack,
           decay: synthSettings.envelopeDecay,
@@ -30,7 +34,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
           release: synthSettings.envelopeRelease,
         },
       }),
-    [] // создается один раз; начальные настройки берутся из Redux
+    []
   );
 
   const filter = useMemo(
@@ -40,13 +44,16 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
         frequency: filterSettings.frequency,
         Q: filterSettings.Q,
       }),
-    [] // создается один раз
+    []
   );
 
   // При изменении настроек синтезатора обновляем его параметры
   useEffect(() => {
     synth.set({
-      // oscillator: { type: synthSettings.oscillatorType },
+      oscillator: {
+        type: synthSettings.oscillatorType,
+      },
+      detune: synthSettings.detune,
       envelope: {
         attack: synthSettings.envelopeAttack,
         decay: synthSettings.envelopeDecay,
