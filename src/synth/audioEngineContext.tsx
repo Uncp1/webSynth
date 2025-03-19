@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
 interface AudioEngineContextProps {
-  synth: Tone.AMSynth;
+  synth: Tone.PolySynth<Tone.AMSynth>;
   filter: Tone.Filter;
 }
 
@@ -18,13 +18,13 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     (state: RootState) => state.filterSettings
   );
 
-  // Создаем экземпляры один раз при монтировании.
+  // Создаем полифонический синтезатор с 8 голосами при монтировании.
   const synth = useMemo(
     () =>
-      new Tone.AMSynth({
-        // Передаем тип осциллятора как строку, что допустимо для AMSynth
+      new Tone.PolySynth(Tone.AMSynth, {
+        //maxPolyphony: 8,
         oscillator: {
-          type: 'square',
+          type: 'sawtooth',
         },
         detune: synthSettings.detune,
         envelope: {
@@ -32,6 +32,15 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
           decay: synthSettings.envelopeDecay,
           sustain: synthSettings.envelopeSustain,
           release: synthSettings.envelopeRelease,
+        },
+        modulation: {
+          type: 'sine', // значение по умолчанию для модулятора
+        },
+        modulationEnvelope: {
+          attack: synthSettings.modulationEnvelopeAttack,
+          decay: synthSettings.modulationEnvelopeDecay,
+          sustain: synthSettings.modulationEnvelopeSustain,
+          release: synthSettings.modulationEnvelopeRelease,
         },
       }),
     []
@@ -47,7 +56,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
-  // При изменении настроек синтезатора обновляем его параметры
+  // Обновление параметров синтезатора при изменении настроек
   useEffect(() => {
     synth.set({
       oscillator: {
@@ -60,10 +69,19 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
         sustain: synthSettings.envelopeSustain,
         release: synthSettings.envelopeRelease,
       },
+      modulation: {
+        type: synthSettings.modulatorOscillatorType,
+      },
+      modulationEnvelope: {
+        attack: synthSettings.modulationEnvelopeAttack,
+        decay: synthSettings.modulationEnvelopeDecay,
+        sustain: synthSettings.modulationEnvelopeSustain,
+        release: synthSettings.modulationEnvelopeRelease,
+      },
     });
   }, [synth, synthSettings]);
 
-  // При изменении настроек фильтра обновляем его параметры
+  // Обновление параметров фильтра при изменении настроек фильтра
   useEffect(() => {
     filter.set({
       type: filterSettings.type,

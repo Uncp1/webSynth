@@ -8,6 +8,12 @@ export interface SynthSettings {
   envelopeSustain: number;
   envelopeRelease: number;
   detune: number;
+  // Новые поля для модулятора:
+  modulatorOscillatorType: 'sine' | 'square' | 'triangle' | 'sawtooth';
+  modulationEnvelopeAttack: number;
+  modulationEnvelopeDecay: number;
+  modulationEnvelopeSustain: number;
+  modulationEnvelopeRelease: number;
 }
 
 const initialState: SynthSettings = {
@@ -17,6 +23,12 @@ const initialState: SynthSettings = {
   envelopeSustain: 0.5,
   envelopeRelease: 1.0,
   detune: 0,
+  // Значения по умолчанию для модулятора:
+  modulatorOscillatorType: 'sine',
+  modulationEnvelopeAttack: 0.1,
+  modulationEnvelopeDecay: 0.2,
+  modulationEnvelopeSustain: 0.5,
+  modulationEnvelopeRelease: 1.0,
 };
 
 const synthSettingsSlice = createSlice({
