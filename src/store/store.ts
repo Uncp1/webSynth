@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import filterSettingsReducer from './filterSettingsSlice';
-import synthSettingsReducer from './synthSettingsSlice';
+import vcaSettingsReducer from './vcaSettingsSlice';
 
 export const store = configureStore({
   reducer: {
     filterSettings: filterSettingsReducer,
-    synthSettings: synthSettingsReducer,
+    vcaSettings: vcaSettingsReducer,
   },
 });
 
