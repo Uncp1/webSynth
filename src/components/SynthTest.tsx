@@ -4,7 +4,7 @@ import { useAudioEngine } from '../synth/audioEngineContext';
 import styles from './keyboard.module.css';
 
 const SynthTest: React.FC = () => {
-  const { synth } = useAudioEngine();
+  const { synth1, synth2 } = useAudioEngine();
   const [baseOctave, setBaseOctave] = useState(3);
   const [audioStarted, setAudioStarted] = useState(false);
   const [computerKeyboardEnabled, setComputerKeyboardEnabled] = useState(false);
@@ -18,11 +18,13 @@ const SynthTest: React.FC = () => {
       await Tone.start();
       setAudioStarted(true);
     }
-    synth.triggerAttack(note);
+    synth1.triggerAttack(note);
+    synth2.triggerAttack(note);
   };
 
   const handleNoteOff = (note: string) => {
-    synth.triggerRelease(note);
+    synth1.triggerRelease(note);
+    synth2.triggerRelease(note);
   };
   // Определяем белые клавиши для двух октав
   const whiteNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -54,6 +56,7 @@ const SynthTest: React.FC = () => {
   const handleOctaveDown = () => setBaseOctave((prev) => prev - 1);
 
   // Сопоставление клавиш компьютерной клавиатуры с нотами
+  // TO DO вывести в ui
   const keyMapping: { [key: string]: string } = {
     a: 'C4',
     w: 'C#4',

@@ -17,7 +17,7 @@ function App() {
             <Filter />
           </section>
           <SynthTest />
-          <WaveformDisplay />
+          {/*    <WaveformDisplay /> */}
         </AudioEngineProvider>
       </Provider>
     </>

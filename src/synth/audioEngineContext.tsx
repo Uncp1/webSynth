@@ -4,8 +4,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
 interface AudioEngineContextProps {
-  synth: Tone.PolySynth<Tone.AMSynth>;
+  synth1: Tone.PolySynth<Tone.Synth>;
+  synth2: Tone.PolySynth<Tone.Synth>;
   filter: Tone.Filter;
+  vca1: Tone.Volume;
+  vca2: Tone.Volume;
 }
 
 const AudioEngineContext = createContext<AudioEngineContextProps | null>(null);
@@ -13,36 +16,53 @@ const AudioEngineContext = createContext<AudioEngineContextProps | null>(null);
 export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const synthSettings = useSelector((state: RootState) => state.synthSettings);
+  const vcaSettings = useSelector((state: RootState) => state.vcaSettings);
   const filterSettings = useSelector(
     (state: RootState) => state.filterSettings
   );
 
-  // Создаем полифонический синтезатор с 8 голосами при монтировании.
-  const synth = useMemo(
+  // Create two polyphonic synthesizers
+  const synth1 = useMemo(
     () =>
-      new Tone.PolySynth(Tone.AMSynth, {
-        //maxPolyphony: 8,
+      new Tone.PolySynth(Tone.Synth, {
         oscillator: {
-          type: 'sawtooth',
+          type: vcaSettings.oscillator1Type || 'sawtooth',
         },
-        detune: synthSettings.detune,
+        detune: vcaSettings.detune1 || 0,
         envelope: {
-          attack: synthSettings.envelopeAttack,
-          decay: synthSettings.envelopeDecay,
-          sustain: synthSettings.envelopeSustain,
-          release: synthSettings.envelopeRelease,
-        },
-        modulation: {
-          type: 'sine', // значение по умолчанию для модулятора
-        },
-        modulationEnvelope: {
-          attack: synthSettings.modulationEnvelopeAttack,
-          decay: synthSettings.modulationEnvelopeDecay,
-          sustain: synthSettings.modulationEnvelopeSustain,
-          release: synthSettings.modulationEnvelopeRelease,
+          attack: vcaSettings.envelope1Attack || 0.01,
+          decay: vcaSettings.envelope1Decay || 0.2,
+          sustain: vcaSettings.envelope1Sustain || 0.5,
+          release: vcaSettings.envelope1Release || 1,
         },
       }),
+    []
+  );
+
+  const synth2 = useMemo(
+    () =>
+      new Tone.PolySynth(Tone.Synth, {
+        oscillator: {
+          type: vcaSettings.oscillator2Type || 'square',
+        },
+        detune: vcaSettings.detune2 || 0,
+        envelope: {
+          attack: vcaSettings.envelope2Attack || 0.01,
+          decay: vcaSettings.envelope2Decay || 0.2,
+          sustain: vcaSettings.envelope2Sustain || 0.5,
+          release: vcaSettings.envelope2Release || 1,
+        },
+      }),
+    []
+  );
+
+  // Create VCA (Volume Control) for each synth
+  const vca1 = useMemo(
+    () => new Tone.Volume(vcaSettings.vca1Volume || -12),
+    []
+  );
+  const vca2 = useMemo(
+    () => new Tone.Volume(vcaSettings.vca2Volume || -12),
     []
   );
 
@@ -56,32 +76,49 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
-  // Обновление параметров синтезатора при изменении настроек
+  // Update synthesizer 1 parameters when settings change
   useEffect(() => {
-    synth.set({
+    synth1.set({
       oscillator: {
-        type: synthSettings.oscillatorType,
+        type: vcaSettings.oscillator1Type,
       },
-      detune: synthSettings.detune,
+      detune: vcaSettings.detune1,
       envelope: {
-        attack: synthSettings.envelopeAttack,
-        decay: synthSettings.envelopeDecay,
-        sustain: synthSettings.envelopeSustain,
-        release: synthSettings.envelopeRelease,
-      },
-      modulation: {
-        type: synthSettings.modulatorOscillatorType,
-      },
-      modulationEnvelope: {
-        attack: synthSettings.modulationEnvelopeAttack,
-        decay: synthSettings.modulationEnvelopeDecay,
-        sustain: synthSettings.modulationEnvelopeSustain,
-        release: synthSettings.modulationEnvelopeRelease,
+        attack: vcaSettings.envelope1Attack,
+        decay: vcaSettings.envelope1Decay,
+        sustain: vcaSettings.envelope1Sustain,
+        release: vcaSettings.envelope1Release,
       },
     });
-  }, [synth, synthSettings]);
 
-  // Обновление параметров фильтра при изменении настроек фильтра
+    // Update VCA1 volume
+    if (vcaSettings.vca1Volume !== undefined) {
+      vca1.volume.value = vcaSettings.vca1Volume;
+    }
+  }, [synth1, vca1, vcaSettings]);
+
+  // Update synthesizer 2 parameters when settings change
+  useEffect(() => {
+    synth2.set({
+      oscillator: {
+        type: vcaSettings.oscillator2Type,
+      },
+      detune: vcaSettings.detune2,
+      envelope: {
+        attack: vcaSettings.envelope2Attack,
+        decay: vcaSettings.envelope2Decay,
+        sustain: vcaSettings.envelope2Sustain,
+        release: vcaSettings.envelope2Release,
+      },
+    });
+
+    // Update VCA2 volume
+    if (vcaSettings.vca2Volume !== undefined) {
+      vca2.volume.value = vcaSettings.vca2Volume;
+    }
+  }, [synth2, vca2, vcaSettings]);
+
+  // Update filter parameters when filter settings change
   useEffect(() => {
     filter.set({
       type: filterSettings.type,
@@ -90,12 +127,29 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, [filter, filterSettings]);
 
-  // Соединяем синтезатор с фильтром и выходом (Destination)
+  // Connect both synthesizers through their VCAs to the filter and output
   useEffect(() => {
-    synth.chain(filter, Tone.Destination);
-  }, [synth, filter]);
+    // Create signal path for each synth
+    synth1.chain(vca1, filter, Tone.Destination);
+    synth2.chain(vca2, filter, Tone.Destination);
 
-  const contextValue: AudioEngineContextProps = { synth, filter };
+    // Cleanup function to dispose of audio nodes when component unmounts
+    /* return () => {
+      synth1.dispose();
+      synth2.dispose();
+      vca1.dispose();
+      vca2.dispose();
+      filter.dispose();
+    }; */
+  }, [synth1, synth2, vca1, vca2, filter]);
+
+  const contextValue: AudioEngineContextProps = {
+    synth1,
+    synth2,
+    vca1,
+    vca2,
+    filter,
+  };
 
   return (
     <AudioEngineContext.Provider value={contextValue}>
