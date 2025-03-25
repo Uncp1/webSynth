@@ -5,7 +5,9 @@ import { AudioEngineProvider } from './synth/audioEngineContext';
 import SynthTest from './components/SynthTest';
 import Filter from './components/filter/Filter';
 import VCA from './components/VCA/VCA';
-import WaveformDisplay from './components/waveformDisplay/WaveformDisplay';
+import Oscilloscope from './components/Oscilloscope/Oscilloscope';
+import Keyboard from './components/keyboard/Keyboard';
+import ADSRBank from './components/Envelope/Envelope';
 
 function App() {
   return (
@@ -16,8 +18,10 @@ function App() {
             <VCA />
             <Filter />
           </section>
-          <SynthTest />
-          {/*    <WaveformDisplay /> */}
+          <Keyboard />
+          <ADSRBank />
+          {/*  <SynthTest />*/}
+          <Oscilloscope />
         </AudioEngineProvider>
       </Provider>
     </>

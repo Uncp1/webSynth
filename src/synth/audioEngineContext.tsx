@@ -9,6 +9,7 @@ interface AudioEngineContextProps {
   filter: Tone.Filter;
   vca1: Tone.Volume;
   vca2: Tone.Volume;
+  analyser: Tone.Analyser;
 }
 
 const AudioEngineContext = createContext<AudioEngineContextProps | null>(null);
@@ -76,13 +77,44 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
+  // Create analyzer for the oscilloscope
+  const analyser = useMemo(() => new Tone.Analyser('waveform', 2048), []);
+
+  // Update synthesizer base frequency for semitone shifting
+  useEffect(() => {
+    // Detune is in cents (100 cents = 1 semitone)
+    // We combine the fine detune with the semitone shift
+    const totalDetune1 = vcaSettings.detune1 + vcaSettings.semitone1 * 100;
+    const totalDetune2 = vcaSettings.detune2 + vcaSettings.semitone2 * 100;
+
+    synth1.set({
+      detune: totalDetune1,
+    });
+
+    synth2.set({
+      detune: totalDetune2,
+    });
+  }, [
+    synth1,
+    synth2,
+    vcaSettings.detune1,
+    vcaSettings.detune2,
+    vcaSettings.semitone1,
+    vcaSettings.semitone2,
+  ]);
+
   // Update synthesizer 1 parameters when settings change
   useEffect(() => {
     synth1.set({
       oscillator: {
         type: vcaSettings.oscillator1Type,
+        // Handle pulse width for pulse/pwm types
+        width: vcaSettings.oscillator1Type.includes('pulse')
+          ? vcaSettings.pulseWidth1
+          : undefined,
+        // Set phase
+        phase: vcaSettings.phase1,
       },
-      detune: vcaSettings.detune1,
       envelope: {
         attack: vcaSettings.envelope1Attack,
         decay: vcaSettings.envelope1Decay,
@@ -102,8 +134,13 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     synth2.set({
       oscillator: {
         type: vcaSettings.oscillator2Type,
+        // Handle pulse width for pulse/pwm types
+        width: vcaSettings.oscillator2Type.includes('pulse')
+          ? vcaSettings.pulseWidth2
+          : undefined,
+        // Set phase
+        phase: vcaSettings.phase2,
       },
-      detune: vcaSettings.detune2,
       envelope: {
         attack: vcaSettings.envelope2Attack,
         decay: vcaSettings.envelope2Decay,
@@ -130,18 +167,19 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   // Connect both synthesizers through their VCAs to the filter and output
   useEffect(() => {
     // Create signal path for each synth
-    synth1.chain(vca1, filter, Tone.Destination);
-    synth2.chain(vca2, filter, Tone.Destination);
+    synth1.chain(vca1, filter, analyser, Tone.Destination);
+    synth2.chain(vca2, filter, analyser, Tone.Destination);
 
     // Cleanup function to dispose of audio nodes when component unmounts
-    /* return () => {
-      synth1.dispose();
-      synth2.dispose();
-      vca1.dispose();
-      vca2.dispose();
-      filter.dispose();
-    }; */
-  }, [synth1, synth2, vca1, vca2, filter]);
+    return () => {
+      synth1.disconnect();
+      synth2.disconnect();
+      vca1.disconnect();
+      vca2.disconnect();
+      filter.disconnect();
+      analyser.disconnect();
+    };
+  }, [synth1, synth2, vca1, vca2, filter, analyser]);
 
   const contextValue: AudioEngineContextProps = {
     synth1,
@@ -149,6 +187,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     vca1,
     vca2,
     filter,
+    analyser,
   };
 
   return (
