@@ -1,10 +1,26 @@
-#root {
-  max-width: 1980px;
+.synth-container {
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.controll__container {
+.synth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.synth-grid-left,
+.synth-grid-right {
   display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .synth-grid {
+    grid-template-columns: 1fr;
+  }
 }

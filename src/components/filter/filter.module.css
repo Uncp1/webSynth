@@ -1,159 +1,53 @@
 .filter {
-  background-color: #282c34;
-  padding: 20px;
-  border-radius: 8px;
-  color: #ffffff;
-  margin: 20px auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1.5rem;
+  border-top: 3px solid var(--accent-green);
 }
 
-.filterTitle {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+.filter__title {
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 10px;
+  padding-bottom: 0.8rem;
 }
 
-.filterTypeSelector {
-  margin-bottom: 20px;
-}
-
-.filterTypesGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.filterTypeButton {
-  background-color: #1a1d23;
-  border: 1px solid #3a3f4b;
-  color: #ffffff;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.filterTypeButton:hover {
-  background-color: #3a3f4b;
-}
-
-.filterTypeButton.active {
-  background-color: #4299e1;
-  border-color: #4299e1;
-  color: #ffffff;
-}
-
-.infoButton {
-  background-color: transparent;
-  border: 1px solid #3a3f4b;
-  color: #a0aec0;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: block;
-  margin: 0 auto;
-  transition: all 0.2s ease;
-}
-
-.infoButton:hover {
-  background-color: #3a3f4b;
-  color: #ffffff;
-}
-
-.infoButton.active {
-  background-color: #3a3f4b;
-  color: #ffffff;
-}
-
-.filterDescription {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #1a1d23;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: #a0aec0;
-  animation: fadeIn 0.3s ease;
-}
-
-.visualizer {
-  background-color: #121417;
-  border-radius: 4px;
-  padding: 15px;
-  margin-bottom: 20px;
+.filter__controls {
   display: flex;
   justify-content: center;
-  align-items: center;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.canvas {
-  width: 100%;
-  height: 150px;
-  border-radius: 2px;
-}
-
-.filterControlsContainer {
-  padding: 15px;
-  background-color: #1a1d23;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
   border-radius: 8px;
 }
 
-.filterControls {
-  display: flex;
-  justify-content: space-around;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.filterControl {
+.filter__control {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 70px;
+  min-width: 100px;
 }
 
-.parameterValue {
-  margin-top: 8px;
-  font-size: 0.9rem;
-  color: #a0aec0;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 4px 8px;
+.modulationSource {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--accent-blue);
+  background-color: rgba(122, 162, 247, 0.1);
+  padding: 0.4rem 0.6rem;
   border-radius: 4px;
   text-align: center;
-  min-width: 80px;
 }
 
-/* Анимации */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Адаптивная верстка */
+/* Media queries */
 @media (max-width: 768px) {
-  .filterTypesGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .filterControls {
+  .filter__controls {
     flex-direction: column;
     align-items: center;
-  }
-
-  .filterControl {
-    margin-bottom: 15px;
+    gap: 1.5rem;
   }
 }
