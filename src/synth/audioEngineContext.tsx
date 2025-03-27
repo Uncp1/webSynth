@@ -8,6 +8,8 @@ import React, {
 import * as Tone from 'tone';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import { getOscillatorType } from './utils';
+
 interface AudioEngineContextProps {
   synth1: Tone.PolySynth<Tone.Synth>;
   synth2: Tone.PolySynth<Tone.Synth>;
@@ -31,12 +33,20 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   // Create a reference to track current active notes for the filter envelope
   const activeNotesRef = useRef<Set<string>>(new Set());
 
+  // Reference for modulation nodes
+  const modulationNodeRef = useRef<Tone.ToneAudioNode | null>(null);
+
   // Create two polyphonic synthesizers
   const synth1 = useMemo(
     () =>
       new Tone.PolySynth(Tone.Synth, {
         oscillator: {
-          type: vcaSettings.oscillator1Type || 'sawtooth',
+          type: getOscillatorType(
+            vcaSettings.oscillator1Type,
+            vcaSettings.isFat1
+          ),
+          // Remove the count property as it's not supported
+          spread: 0,
         },
         detune: vcaSettings.detune1 || 0,
         envelope: {
@@ -53,7 +63,12 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     () =>
       new Tone.PolySynth(Tone.Synth, {
         oscillator: {
-          type: vcaSettings.oscillator2Type || 'square',
+          type: getOscillatorType(
+            vcaSettings.oscillator2Type,
+            vcaSettings.isFat2
+          ),
+          // Remove the count property as it's not supported
+          spread: 0,
         },
         detune: vcaSettings.detune2 || 0,
         envelope: {
@@ -105,10 +120,60 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   // Create scale node for envelope amount control
   const filterEnvScaler = useMemo(() => new Tone.Gain(0), []);
 
+  // Update oscillator settings
+  useEffect(() => {
+    // Update oscillator 1 settings
+    synth1.set({
+      oscillator: {
+        type: getOscillatorType(
+          vcaSettings.oscillator1Type,
+          vcaSettings.isFat1
+        ),
+        // Remove count property, use spread only for fat
+        spread: vcaSettings.isFat1 ? vcaSettings.spread1 : 0,
+        width:
+          vcaSettings.oscillator1Type === 'pulse' ||
+          vcaSettings.oscillator1Type === 'pwm'
+            ? vcaSettings.pulseWidth1
+            : undefined,
+        phase: vcaSettings.phase1,
+      },
+    });
+
+    // Update oscillator 2 settings
+    synth2.set({
+      oscillator: {
+        type: getOscillatorType(
+          vcaSettings.oscillator2Type,
+          vcaSettings.isFat2
+        ),
+        // Remove count property, use spread only for fat
+        spread: vcaSettings.isFat2 ? vcaSettings.spread2 : 0,
+        width:
+          vcaSettings.oscillator2Type === 'pulse' ||
+          vcaSettings.oscillator2Type === 'pwm'
+            ? vcaSettings.pulseWidth2
+            : undefined,
+        phase: vcaSettings.phase2,
+      },
+    });
+  }, [
+    synth1,
+    synth2,
+    vcaSettings.oscillator1Type,
+    vcaSettings.oscillator2Type,
+    vcaSettings.isFat1,
+    vcaSettings.isFat2,
+    vcaSettings.pulseWidth1,
+    vcaSettings.pulseWidth2,
+    vcaSettings.phase1,
+    vcaSettings.phase2,
+    vcaSettings.spread1,
+    vcaSettings.spread2,
+  ]);
+
   // Update synthesizer base frequency for semitone shifting
   useEffect(() => {
-    // Detune is in cents (100 cents = 1 semitone)
-    // We combine the fine detune with the semitone shift
     const totalDetune1 = vcaSettings.detune1 + vcaSettings.semitone1 * 100;
     const totalDetune2 = vcaSettings.detune2 + vcaSettings.semitone2 * 100;
 
@@ -131,15 +196,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   // Update synthesizer 1 parameters when settings change
   useEffect(() => {
     synth1.set({
-      oscillator: {
-        type: vcaSettings.oscillator1Type,
-        // Handle pulse width for pulse/pwm types
-        width: vcaSettings.oscillator1Type.includes('pulse')
-          ? vcaSettings.pulseWidth1
-          : undefined,
-        // Set phase
-        phase: vcaSettings.phase1,
-      },
       envelope: {
         attack: vcaSettings.envelope1Attack,
         decay: vcaSettings.envelope1Decay,
@@ -156,18 +212,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Update synthesizer 2 parameters when settings change
   useEffect(() => {
-    synth2.set({
-      oscillator: {
-        type: vcaSettings.oscillator2Type,
-        // Handle pulse width for pulse/pwm types
-        width: vcaSettings.oscillator2Type.includes('pulse')
-          ? vcaSettings.pulseWidth2
-          : undefined,
-        // Set phase
-        phase: vcaSettings.phase2,
-      },
-    });
-
     // Update envelope settings based on destination
     if (vcaSettings.envelope2Destination === 'vca2') {
       // If the envelope is connected to VCA, update the synth2 envelope
@@ -182,7 +226,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Always update the filter envelope with envelope2 settings
-    // (it will only be used when envelope2Destination is 'filter')
     filterEnvelope.attack = vcaSettings.envelope2Attack;
     filterEnvelope.decay = vcaSettings.envelope2Decay;
     filterEnvelope.sustain = vcaSettings.envelope2Sustain;
@@ -203,10 +246,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     // Update filter envelope modulation amount
-    // Scale from -100 to 100 to a reasonable frequency range
     if (filterSettings.envelopeAmount !== undefined) {
-      // Calculate modulation range in Hz (positive or negative)
-      // For example, a value of 100 could allow modulation up to 10000Hz from the base frequency
       const modAmount = (filterSettings.envelopeAmount / 100) * 10000;
       filterEnvScaler.gain.value = modAmount;
     }
@@ -215,22 +255,26 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   // Handle envelope destination changes and connections
   useEffect(() => {
     // First, disconnect any existing connections to start fresh
-    filterEnvelope.disconnect();
-    filterEnvScaler.disconnect();
+    try {
+      filterEnvelope.disconnect();
+      filterEnvScaler.disconnect();
+    } catch {
+      // Ignore errors if not connected
+    }
 
     // Connect filterEnvelope to the scaler if destination is 'filter'
     if (vcaSettings.envelope2Destination === 'filter') {
       // Connect the envelope to the frequency parameter of the filter through a scaler
       filterEnvelope.connect(filterEnvScaler);
+      // Use connect(param) method instead of directly assigning frequency
       filterEnvScaler.connect(filter.frequency);
 
-      // When destination is filter, we need to use a static envelope for synth2
-      // (not modulated by notes)
+      // When destination is filter, use a static envelope for synth2
       synth2.set({
         envelope: {
-          attack: 0.01, // Quick attack for immediate sound
+          attack: 0.01,
           decay: 0.2,
-          sustain: 0.8, // High sustain for consistent volume
+          sustain: 0.8,
           release: 0.5,
         },
       });
@@ -257,7 +301,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     vcaSettings.envelope2Release,
   ]);
 
-  // Override synth1 and synth2 triggerAttack and triggerRelease to also trigger the filter envelope
+  // Override synth1 and synth2 triggerAttack and triggerRelease
   useEffect(() => {
     // Save the original methods
     const origSynth1TriggerAttack = synth1.triggerAttack.bind(synth1);
@@ -265,19 +309,15 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     const origSynth2TriggerAttack = synth2.triggerAttack.bind(synth2);
     const origSynth2TriggerRelease = synth2.triggerRelease.bind(synth2);
 
-    // Override with our own implementations that also trigger the filter envelope
+    // Override for filter envelope handling
     synth1.triggerAttack = (notes, time, velocity) => {
       origSynth1TriggerAttack(notes, time, velocity);
 
-      // If envelope 2 is routed to filter, trigger the filter envelope
       if (vcaSettings.envelope2Destination === 'filter') {
-        // Convert notes to array if it's not already
         const noteArray = Array.isArray(notes) ? notes : [notes];
 
-        // Track active notes
         noteArray.forEach((note) => activeNotesRef.current.add(note));
 
-        // Only trigger if this is the first note (to prevent retrigger on polyphonic playing)
         if (activeNotesRef.current.size === noteArray.length) {
           filterEnvelope.triggerAttack(time);
         }
@@ -289,15 +329,11 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     synth1.triggerRelease = (notes, time) => {
       origSynth1TriggerRelease(notes, time);
 
-      // If envelope 2 is routed to filter, handle release
       if (vcaSettings.envelope2Destination === 'filter') {
-        // Convert notes to array if it's not already
         const noteArray = Array.isArray(notes) ? notes : [notes];
 
-        // Remove released notes from tracking
         noteArray.forEach((note) => activeNotesRef.current.delete(note));
 
-        // Only release envelope if all notes are released
         if (activeNotesRef.current.size === 0) {
           filterEnvelope.triggerRelease(time);
         }
@@ -310,7 +346,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     synth2.triggerAttack = (notes, time, velocity) => {
       origSynth2TriggerAttack(notes, time, velocity);
 
-      // Only handle if envelope 2 is routed to filter (for the second synth)
       if (vcaSettings.envelope2Destination === 'filter') {
         const noteArray = Array.isArray(notes) ? notes : [notes];
         noteArray.forEach((note) => activeNotesRef.current.add(note));
@@ -338,7 +373,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
       return synth2;
     };
 
-    // Cleanup function to restore original methods when component unmounts
     return () => {
       synth1.triggerAttack = origSynth1TriggerAttack;
       synth1.triggerRelease = origSynth1TriggerRelease;
@@ -347,22 +381,45 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [synth1, synth2, filterEnvelope, vcaSettings.envelope2Destination]);
 
-  // Connect both synthesizers through their VCAs to the filter and output
+  // CRITICAL PART: Setup all connections (including modulation) in one place
   useEffect(() => {
-    // Create signal path for each synth
-    synth1.chain(vca1, filter, analyser, Tone.Destination);
-    synth2.chain(vca2, filter, analyser, Tone.Destination);
-
-    // Cleanup function to dispose of audio nodes when component unmounts
-    return () => {
+    // Disconnect everything first to avoid duplicate connections
+    try {
       synth1.disconnect();
       synth2.disconnect();
       vca1.disconnect();
       vca2.disconnect();
       filter.disconnect();
-      filterEnvelope.disconnect();
-      filterEnvScaler.disconnect();
+
+      if (modulationNodeRef.current) {
+        modulationNodeRef.current.disconnect();
+        modulationNodeRef.current = null;
+      }
+    } catch {
+      console.warn('Error disconnecting nodes');
+    }
+
+    // Simple routing without modulation for now
+    synth1.connect(vca1);
+    synth2.connect(vca2);
+
+    // Now connect VCAs to filter, filter to analyzer, analyzer to destination
+    vca1.connect(filter);
+    vca2.connect(filter);
+    filter.connect(analyser);
+    analyser.connect(Tone.Destination);
+
+    return () => {
+      // Cleanup function
+      synth1.disconnect();
+      synth2.disconnect();
+      vca1.disconnect();
+      vca2.disconnect();
+      filter.disconnect();
       analyser.disconnect();
+      if (modulationNodeRef.current) {
+        modulationNodeRef.current.disconnect();
+      }
     };
   }, [
     synth1,
@@ -370,9 +427,8 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     vca1,
     vca2,
     filter,
-    filterEnvelope,
-    filterEnvScaler,
     analyser,
+    vcaSettings.modulationType,
   ]);
 
   const contextValue: AudioEngineContextProps = {
@@ -392,6 +448,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// Moving this function outside the component to help with fast refresh
 export const useAudioEngine = () => {
   const context = useContext(AudioEngineContext);
   if (!context) {
