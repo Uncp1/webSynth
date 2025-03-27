@@ -2,6 +2,7 @@
   height: 64px;
   width: 64px;
   border-radius: 50%;
+  transition: transform 0.1s ease-in-out, box-shadow 0.2s ease;
 }
 
 .stone {
@@ -44,10 +45,70 @@
   align-items: center; /* items-center */
   font-size: 0.75rem; /* text-xs */
   user-select: none; /* select-none */
-  outline: none; /* outline-none */
+  padding: 4px;
 }
 
-.container:focus-within {
-  outline: 1px solid #d6d3d1; /* focus-within:outline-1 & focus-within:outline-stone-300 */
-  outline-offset: 4px; /* focus-within:outline-offset-4 */
+/* Remove all outlines and focus indicators */
+.container:focus-within,
+.container *:focus,
+.container *:focus-visible,
+.knobHeadless:focus,
+.knobHeadless:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Style for knob wrapper */
+.knobWrapper {
+  position: relative;
+  cursor: grab;
+}
+
+.knobWrapper:active {
+  cursor: grabbing;
+}
+
+/* Add hover and active effects to knob */
+.knobWrapper:hover .wrapper {
+  transform: scale(1.03);
+}
+
+.knobWrapper:active .wrapper {
+  transform: scale(1.05);
+}
+
+/* Theme-specific glows on active state */
+.knobWrapper:active .stone {
+  box-shadow: 0 0 10px rgba(214, 211, 209, 0.7);
+}
+
+.knobWrapper:active .pink {
+  box-shadow: 0 0 10px rgba(251, 207, 232, 0.7);
+}
+
+.knobWrapper:active .green {
+  box-shadow: 0 0 10px rgba(187, 247, 208, 0.7);
+}
+
+.knobWrapper:active .sky {
+  box-shadow: 0 0 10px rgba(186, 230, 253, 0.7);
+}
+
+/* Override any default styles from the headless knob */
+.knobHeadless {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Style for the output value */
+.knobOutput {
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Ensure no outline on double-click */
+* {
+  -webkit-tap-highlight-color: transparent;
 }

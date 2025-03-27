@@ -92,6 +92,7 @@ const ADSR: React.FC<ADSRProps> = ({ index }) => {
             <Knob
               valueMin={0.001}
               valueMax={5}
+              valueDefault={attack}
               onValueRawChange={handleAttackChange}
               label="Attack"
               theme={index === 1 ? 'green' : 'sky'}
@@ -102,6 +103,7 @@ const ADSR: React.FC<ADSRProps> = ({ index }) => {
             <Knob
               valueMin={0.001}
               valueMax={5}
+              valueDefault={decay}
               onValueRawChange={handleDecayChange}
               label="Decay"
               theme={index === 1 ? 'green' : 'sky'}
@@ -112,6 +114,7 @@ const ADSR: React.FC<ADSRProps> = ({ index }) => {
             <Knob
               valueMin={0}
               valueMax={1}
+              valueDefault={sustain}
               onValueRawChange={handleSustainChange}
               label="Sustain"
               theme={index === 1 ? 'green' : 'sky'}
@@ -122,6 +125,7 @@ const ADSR: React.FC<ADSRProps> = ({ index }) => {
             <Knob
               valueMin={0.001}
               valueMax={10}
+              valueDefault={release}
               onValueRawChange={handleReleaseChange}
               label="Release"
               theme={index === 1 ? 'green' : 'sky'}

@@ -7,6 +7,9 @@ import { KnobFrequency } from '../knobs/KnobFrequency';
 import { Knob } from '../knobs/Knob';
 
 const Filter: React.FC = () => {
+  const filterSettings = useSelector(
+    (state: RootState) => state.filterSettings
+  );
   const vcaSettings = useSelector((state: RootState) => state.vcaSettings);
   const dispatch: AppDispatch = useDispatch();
 
@@ -40,6 +43,7 @@ const Filter: React.FC = () => {
           <Knob
             valueMin={0}
             valueMax={10}
+            valueDefault={filterSettings.Q}
             onValueRawChange={handleQChange}
             label="Q"
             theme="green"
@@ -51,6 +55,7 @@ const Filter: React.FC = () => {
             <Knob
               valueMin={-100}
               valueMax={100}
+              valueDefault={filterSettings.envelopeAmount}
               onValueRawChange={handleEnvAmountChange}
               label="Env Amount"
               theme="sky" // Using the envelope 2 theme color

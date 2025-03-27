@@ -1,5 +1,7 @@
 import { NormalisableRange } from '../../utils/math/NormalisableRange';
 import { KnobBase } from './KnobBase';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 type KnobBaseProps = React.ComponentProps<typeof KnobBase>;
 type KnobFrequencyProps = Pick<
@@ -8,9 +10,12 @@ type KnobFrequencyProps = Pick<
 >;
 
 export function KnobFrequency(props: KnobFrequencyProps) {
+  const filterSettings = useSelector(
+    (state: RootState) => state.filterSettings
+  );
   return (
     <KnobBase
-      valueDefault={valueDefault}
+      valueDefault={filterSettings.frequency} // maybe change later
       valueMin={valueMin}
       valueMax={valueMax}
       stepFn={stepFn}
@@ -26,7 +31,7 @@ export function KnobFrequency(props: KnobFrequencyProps) {
 
 const valueMin = 20;
 const valueMax = 20000;
-const valueDefault = 7000; //TO DO change it !!!!
+
 const stepFn = (valueRaw: number): number => {
   if (valueRaw < 100) {
     return 1;

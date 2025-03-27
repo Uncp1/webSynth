@@ -218,6 +218,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             <Knob
               valueMin={-100}
               valueMax={100}
+              valueDefault={detune}
               onValueRawChange={handleDetuneChange}
               label="Fine"
               theme={index === 1 ? 'green' : 'sky'}
@@ -228,6 +229,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             <Knob
               valueMin={-24}
               valueMax={24}
+              valueDefault={semitone}
               onValueRawChange={handleSemitoneChange}
               label="Semitones"
               theme={index === 1 ? 'green' : 'sky'}
@@ -238,6 +240,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             <Knob
               valueMin={-60}
               valueMax={0}
+              valueDefault={volume}
               onValueRawChange={handleVolumeChange}
               label="Level"
               theme={index === 1 ? 'green' : 'sky'}
@@ -250,6 +253,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             <Knob
               valueMin={0}
               valueMax={360}
+              valueDefault={phase}
               onValueRawChange={handlePhaseChange}
               label="Phase"
               theme={index === 1 ? 'green' : 'sky'}
@@ -261,6 +265,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
               <Knob
                 valueMin={0}
                 valueMax={1}
+                valueDefault={pulseWidth}
                 onValueRawChange={handlePulseWidthChange}
                 label="Width"
                 theme={index === 1 ? 'green' : 'sky'}

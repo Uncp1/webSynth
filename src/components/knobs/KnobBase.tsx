@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, useEffect, useRef } from 'react';
 import {
   KnobHeadless,
   KnobHeadlessLabel,
@@ -52,6 +52,12 @@ export function KnobBase({
   const stepLarger = stepLargerFn(valueRaw);
   const dragSensitivity = 0.006;
 
+  // Reference to the knob container element
+  const knobContainerRef = useRef<HTMLDivElement>(null);
+
+  // Store the ORIGINAL default value in a ref so it doesn't change with prop updates
+  const originalDefaultRef = useRef<number>(valueDefault);
+
   // Обработчик, который обновляет локальное состояние и вызывает переданный колбэк (если есть)
   const handleValueRawChange = (newValue: number) => {
     setValueRaw(newValue);
@@ -59,6 +65,38 @@ export function KnobBase({
       onValueRawChange(newValue);
     }
   };
+
+  // Update value when valueDefault changes (from Redux)
+  useEffect(() => {
+    setValueRaw(valueDefault);
+  }, [valueDefault]);
+
+  // Reset to ORIGINAL default value on double-click
+  const resetToDefault = () => {
+    const originalDefault = originalDefaultRef.current;
+    setValueRaw(originalDefault);
+    if (onValueRawChange) {
+      onValueRawChange(originalDefault);
+    }
+  };
+
+  // Set up double-click handler using the DOM API directly
+  useEffect(() => {
+    const knobElement = knobContainerRef.current;
+    if (!knobElement) return;
+
+    // Create a direct DOM event listener for double-click
+    const handleDoubleClick = () => {
+      resetToDefault();
+    };
+
+    knobElement.addEventListener('dblclick', handleDoubleClick);
+
+    // Cleanup
+    return () => {
+      knobElement.removeEventListener('dblclick', handleDoubleClick);
+    };
+  }, []);
 
   const keyboardControlHandlers = useKnobKeyboardControls({
     valueRaw,
@@ -70,27 +108,29 @@ export function KnobBase({
   });
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} ref={knobContainerRef}>
       <KnobHeadlessLabel id={labelId}>{label}</KnobHeadlessLabel>
-      <KnobHeadless
-        id={knobId}
-        aria-labelledby={labelId}
-        className="relative w-16 h-16 outline-none"
-        valueMin={valueMin}
-        valueMax={valueMax}
-        valueRaw={valueRaw}
-        valueRawRoundFn={valueRawRoundFn}
-        valueRawDisplayFn={valueRawDisplayFn}
-        dragSensitivity={dragSensitivity}
-        orientation={orientation}
-        mapTo01={mapTo01}
-        mapFrom01={mapFrom01}
-        onValueRawChange={handleValueRawChange}
-        {...keyboardControlHandlers}
-      >
-        <KnobBaseThumb theme={theme} value01={value01} />
-      </KnobHeadless>
-      <KnobHeadlessOutput htmlFor={knobId}>
+      <div className={styles.knobWrapper}>
+        <KnobHeadless
+          id={knobId}
+          aria-labelledby={labelId}
+          className={styles.knobHeadless}
+          valueMin={valueMin}
+          valueMax={valueMax}
+          valueRaw={valueRaw}
+          valueRawRoundFn={valueRawRoundFn}
+          valueRawDisplayFn={valueRawDisplayFn}
+          dragSensitivity={dragSensitivity}
+          orientation={orientation}
+          mapTo01={mapTo01}
+          mapFrom01={mapFrom01}
+          onValueRawChange={handleValueRawChange}
+          {...keyboardControlHandlers}
+        >
+          <KnobBaseThumb theme={theme} value01={value01} />
+        </KnobHeadless>
+      </div>
+      <KnobHeadlessOutput htmlFor={knobId} className={styles.knobOutput}>
         {valueRawDisplayFn(valueRaw)}
       </KnobHeadlessOutput>
     </div>
