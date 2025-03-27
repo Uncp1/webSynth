@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { EnvelopeDestination } from '../components/Envelope/Envelope';
 
 // Define oscillator type
 type OscillatorType =
@@ -8,7 +9,9 @@ type OscillatorType =
   | 'sawtooth'
   | 'fatsawtooth'
   | 'fattriangle'
-  | 'fatsquare';
+  | 'fatsquare'
+  | 'pulse'
+  | 'pwm';
 
 // Define the state interface for VCA settings
 interface VCASettingsState {
@@ -20,6 +23,9 @@ interface VCASettingsState {
   envelope1Sustain: number;
   envelope1Release: number;
   vca1Volume: number; // VCA1 volume in dB
+  semitone1: number; // Semitone shift for oscillator 1 (-24 to +24)
+  pulseWidth1: number; // Pulse width for pulse/pwm oscillator types (0-1)
+  phase1: number; // Phase offset (0-360 degrees)
 
   // VCA 2 parameters
   oscillator2Type: OscillatorType;
@@ -29,6 +35,10 @@ interface VCASettingsState {
   envelope2Sustain: number;
   envelope2Release: number;
   vca2Volume: number; // VCA2 volume in dB
+  semitone2: number; // Semitone shift for oscillator 2 (-24 to +24)
+  pulseWidth2: number; // Pulse width for pulse/pwm oscillator types (0-1)
+  phase2: number; // Phase offset (0-360 degrees)
+  envelope2Destination: EnvelopeDestination;
 }
 
 // Initial state with default values
@@ -41,6 +51,9 @@ const initialState: VCASettingsState = {
   envelope1Sustain: 0.5,
   envelope1Release: 1,
   vca1Volume: -12, // 0dB = unity gain
+  semitone1: 0,
+  pulseWidth1: 0.5,
+  phase1: 0,
 
   // VCA 2 defaults
   oscillator2Type: 'square',
@@ -49,7 +62,11 @@ const initialState: VCASettingsState = {
   envelope2Decay: 0.2,
   envelope2Sustain: 0.5,
   envelope2Release: 1,
+  envelope2Destination: 'filter',
   vca2Volume: -12, // 0dB = unity gain
+  semitone2: 0,
+  pulseWidth2: 0.5,
+  phase2: 0,
 };
 
 // Create the slice

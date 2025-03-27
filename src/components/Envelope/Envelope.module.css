@@ -1,0 +1,145 @@
+.adsrBank {
+  background-color: #282c34;
+  padding: 20px;
+  border-radius: 8px;
+  color: #ffffff;
+  margin: 20px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.bankTitle {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.adsrSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.adsr {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  background-color: #1a1d23;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-top: 3px solid transparent;
+}
+
+/* Theme colors for oscillator 1 and 2 */
+.osc1Theme {
+  border-color: #48bb78; /* Green */
+}
+
+.osc2Theme {
+  border-color: #4299e1; /* Blue */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.title {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.visualizer {
+  background-color: #121417;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.canvas {
+  width: 100%;
+  height: 150px;
+  border-radius: 2px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.knobRow {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.knobWrapper {
+  text-align: center;
+  flex: 1;
+  min-width: 60px;
+}
+
+.parameterValues {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.parameterValue {
+  text-align: center;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.parameterValue span {
+  color: #a0aec0;
+  font-size: 0.8rem;
+  margin-right: 5px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .adsrSection {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .adsr {
+    min-width: 280px;
+    max-width: 100%;
+  }
+
+  .knobRow {
+    gap: 10px;
+  }
+}

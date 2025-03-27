@@ -1,26 +1,159 @@
 .filter {
+  background-color: #282c34;
   padding: 20px;
-  text-align: center;
+  border-radius: 8px;
+  color: #ffffff;
+  margin: 20px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.filter__knobs {
+.filterTitle {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.filterTypeSelector {
+  margin-bottom: 20px;
+}
+
+.filterTypesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.filterTypeButton {
+  background-color: #1a1d23;
+  border: 1px solid #3a3f4b;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterTypeButton:hover {
+  background-color: #3a3f4b;
+}
+
+.filterTypeButton.active {
+  background-color: #4299e1;
+  border-color: #4299e1;
+  color: #ffffff;
+}
+
+.infoButton {
+  background-color: transparent;
+  border: 1px solid #3a3f4b;
+  color: #a0aec0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.infoButton:hover {
+  background-color: #3a3f4b;
+  color: #ffffff;
+}
+
+.infoButton.active {
+  background-color: #3a3f4b;
+  color: #ffffff;
+}
+
+.filterDescription {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #1a1d23;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #a0aec0;
+  animation: fadeIn 0.3s ease;
+}
+
+.visualizer {
+  background-color: #121417;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
-  gap: 40px;
+  align-items: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.filter__control {
+.canvas {
+  width: 100%;
+  height: 150px;
+  border-radius: 2px;
+}
+
+.filterControlsContainer {
+  padding: 15px;
+  background-color: #1a1d23;
+  border-radius: 8px;
+}
+
+.filterControls {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.filterControl {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 70px;
 }
 
-.filter__display {
-  font-size: 16px;
+.parameterValue {
   margin-top: 8px;
+  font-size: 0.9rem;
+  color: #a0aec0;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 80px;
 }
 
-.filter__label {
-  margin-top: 8px;
-  font-weight: bold;
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивная верстка */
+@media (max-width: 768px) {
+  .filterTypesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filterControls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filterControl {
+    margin-bottom: 15px;
+  }
 }

@@ -7,9 +7,7 @@ import { KnobFrequency } from '../knobs/KnobFrequency';
 import { Knob } from '../knobs/Knob';
 
 const Filter: React.FC = () => {
-  const filterSettings = useSelector(
-    (state: RootState) => state.filterSettings
-  );
+  const vcaSettings = useSelector((state: RootState) => state.vcaSettings);
   const dispatch: AppDispatch = useDispatch();
 
   const handleFrequencyChange = (newValue: number) => {
@@ -19,6 +17,13 @@ const Filter: React.FC = () => {
   const handleQChange = (newValue: number) => {
     dispatch(updateFilterSettings({ Q: newValue }));
   };
+
+  const handleEnvAmountChange = (newValue: number) => {
+    dispatch(updateFilterSettings({ envelopeAmount: newValue }));
+  };
+
+  const isEnvelopeModulatingFilter =
+    vcaSettings.envelope2Destination === 'filter';
 
   return (
     <div className={styles.filter}>
@@ -40,6 +45,21 @@ const Filter: React.FC = () => {
             theme="green"
           />
         </div>
+
+        {isEnvelopeModulatingFilter && (
+          <div className={styles.filter__control}>
+            <Knob
+              valueMin={-100}
+              valueMax={100}
+              onValueRawChange={handleEnvAmountChange}
+              label="Env Amount"
+              theme="sky" // Using the envelope 2 theme color
+            />
+            <div className={styles.modulationSource}>
+              <span>Mod: Env 2</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

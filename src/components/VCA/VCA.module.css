@@ -1,35 +1,212 @@
-/* SynthSettings.module.css */
-.synthSettings {
+.oscillatorBank {
   background-color: #282c34;
   padding: 20px;
   border-radius: 8px;
   color: #ffffff;
-  max-width: 800px;
   margin: 20px auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.synthSettings__title {
+.bankTitle {
   font-size: 1.8rem;
   margin-bottom: 20px;
   text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
 }
 
-.synthSettings__controls {
+.oscillatorSection {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
 }
 
-.synthSettings__control {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.oscillator {
+  flex: 1;
+  min-width: 260px;
+  max-width: 380px;
+  background-color: #1a1d23;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-top: 3px solid transparent;
 }
 
-.synthSettings__control label {
-  margin-bottom: 8px;
-  font-size: 1rem;
+.oscillator.disabled {
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+/* Theme colors for oscillator 1 and 2 */
+.osc1Theme {
+  border-color: #48bb78; /* Green */
+}
+
+.osc2Theme {
+  border-color: #4299e1; /* Blue */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.title {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.currentType {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
   font-weight: 500;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggleButton.enabled {
+  background-color: #48bb78;
+  color: #000;
+}
+
+.toggleButton.disabled {
+  background-color: #4a5568;
+  color: #cbd5e0;
+}
+
+.waveformSection {
+  margin-bottom: 20px;
+}
+
+.waveformSelector {
+  width: 100%;
+  background-color: #2d3748;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.waveformSelector:hover {
+  background-color: #4a5568;
+}
+
+.waveformGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+.waveformButton {
+  background-color: #2d3748;
+  color: white;
+  border: none;
+  padding: 6px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.waveformButton:hover {
+  background-color: #4a5568;
+}
+
+.waveformButton.active {
+  background-color: #48bb78;
+  color: #000;
+  font-weight: bold;
+}
+
+.oscillator.osc2Theme .waveformButton.active {
+  background-color: #4299e1;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.knobRow {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.knobWrapper {
+  text-align: center;
+}
+
+.parameterValue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.parameterValue span {
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .oscillatorSection {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .oscillator {
+    min-width: 240px;
+    max-width: 100%;
+  }
+
+  .waveformGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
