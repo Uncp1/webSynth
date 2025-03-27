@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
 import { updateVCASettings } from '../../store/vcaSettingsSlice';
-import * as Tone from 'tone';
 import { Knob } from '../knobs/Knob';
+import { SteppedKnob } from '../knobs/SteppedKnob';
 import styles from './VCA.module.css';
 
 // Oscillator waveform type
@@ -12,18 +12,21 @@ type OscillatorType =
   | 'square'
   | 'triangle'
   | 'sawtooth'
-  | 'fatsawtooth'
-  | 'fattriangle'
-  | 'fatsquare'
   | 'pulse'
   | 'pwm';
+
+// Modulation types
+type ModulationType = 'none' | 'hardsync' | 'ringmod' | 'fm';
 
 interface OscillatorProps {
   index: 1 | 2; // Either oscillator 1 or 2
 }
 
 // Oscillator label display component
-const OscillatorLabel: React.FC<{ type: OscillatorType }> = ({ type }) => {
+const OscillatorLabel: React.FC<{ type: OscillatorType; isFat: boolean }> = ({
+  type,
+  isFat,
+}) => {
   // Get display name based on oscillator type
   const getDisplayName = (type: OscillatorType) => {
     switch (type) {
@@ -35,24 +38,19 @@ const OscillatorLabel: React.FC<{ type: OscillatorType }> = ({ type }) => {
         return 'Triangle';
       case 'sawtooth':
         return 'Sawtooth';
-      case 'fatsawtooth':
-        return 'Fat Saw';
-      case 'fatsquare':
-        return 'Fat Square';
-      case 'fattriangle':
-        return 'Fat Triangle';
       case 'pulse':
         return 'Pulse';
       case 'pwm':
         return 'PWM';
-      default:
-        return type;
     }
   };
 
   return (
     <div className={styles.currentType}>
-      <span>{getDisplayName(type)}</span>
+      <span>
+        {isFat ? 'Fat ' : ''}
+        {getDisplayName(type)}
+      </span>
     </div>
   );
 };
@@ -64,9 +62,11 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
   // Get oscillator-specific settings
   const oscillatorType =
     index === 1 ? vcaSettings.oscillator1Type : vcaSettings.oscillator2Type;
+  const isFat = index === 1 ? vcaSettings.isFat1 : vcaSettings.isFat2;
   const detune = index === 1 ? vcaSettings.detune1 : vcaSettings.detune2;
   const volume = index === 1 ? vcaSettings.vca1Volume : vcaSettings.vca2Volume;
   const semitone = index === 1 ? vcaSettings.semitone1 : vcaSettings.semitone2;
+  const spread = index === 1 ? vcaSettings.spread1 : vcaSettings.spread2;
   const pulseWidth =
     index === 1 ? vcaSettings.pulseWidth1 : vcaSettings.pulseWidth2;
   const phase = index === 1 ? vcaSettings.phase1 : vcaSettings.phase2;
@@ -83,6 +83,14 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
     }
     // Hide selector after selection
     setShowWaveformSelector(false);
+  };
+
+  const handleFatToggle = () => {
+    if (index === 1) {
+      dispatch(updateVCASettings({ isFat1: !isFat }));
+    } else {
+      dispatch(updateVCASettings({ isFat2: !isFat }));
+    }
   };
 
   const handleDetuneChange = (newValue: number) => {
@@ -106,6 +114,14 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
       dispatch(updateVCASettings({ semitone1: newValue }));
     } else {
       dispatch(updateVCASettings({ semitone2: newValue }));
+    }
+  };
+
+  const handleSpreadChange = (newValue: number) => {
+    if (index === 1) {
+      dispatch(updateVCASettings({ spread1: newValue }));
+    } else {
+      dispatch(updateVCASettings({ spread2: newValue }));
     }
   };
 
@@ -155,9 +171,6 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
       'triangle',
       'sawtooth',
       'square',
-      'fattriangle',
-      'fatsawtooth',
-      'fatsquare',
       'pulse',
       'pwm',
     ];
@@ -190,7 +203,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
     >
       <div className={styles.header}>
         <h3 className={styles.title}>OSC {index}</h3>
-        <OscillatorLabel type={oscillatorType} />
+        <OscillatorLabel type={oscillatorType} isFat={isFat} />
         <button
           className={`${styles.toggleButton} ${
             isEnabled ? styles.enabled : styles.disabled
@@ -202,12 +215,21 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
       </div>
 
       <div className={styles.waveformSection}>
-        <button
-          className={styles.waveformSelector}
-          onClick={() => setShowWaveformSelector(!showWaveformSelector)}
-        >
-          {showWaveformSelector ? 'Hide Waveforms' : 'Select Waveform'}
-        </button>
+        <div className={styles.waveformControls}>
+          <button
+            className={styles.waveformSelector}
+            onClick={() => setShowWaveformSelector(!showWaveformSelector)}
+          >
+            {showWaveformSelector ? 'Hide Waveforms' : 'Select Waveform'}
+          </button>
+
+          <button
+            className={`${styles.fatButton} ${isFat ? styles.active : ''}`}
+            onClick={handleFatToggle}
+          >
+            FAT
+          </button>
+        </div>
 
         {showWaveformSelector && renderWaveformButtons()}
       </div>
@@ -218,6 +240,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             <Knob
               valueMin={-100}
               valueMax={100}
+              valueDefault={detune}
               onValueRawChange={handleDetuneChange}
               label="Fine"
               theme={index === 1 ? 'green' : 'sky'}
@@ -225,9 +248,10 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
           </div>
 
           <div className={styles.knobWrapper}>
-            <Knob
+            <SteppedKnob
               valueMin={-24}
               valueMax={24}
+              valueDefault={semitone}
               onValueRawChange={handleSemitoneChange}
               label="Semitones"
               theme={index === 1 ? 'green' : 'sky'}
@@ -238,6 +262,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             <Knob
               valueMin={-60}
               valueMax={0}
+              valueDefault={volume}
               onValueRawChange={handleVolumeChange}
               label="Level"
               theme={index === 1 ? 'green' : 'sky'}
@@ -246,10 +271,25 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
         </div>
 
         <div className={styles.knobRow}>
+          {/* Spread control is only visible when fat mode is on */}
+          {isFat && (
+            <div className={styles.knobWrapper}>
+              <SteppedKnob
+                valueMin={0}
+                valueMax={100}
+                valueDefault={spread}
+                onValueRawChange={handleSpreadChange}
+                label="Spread"
+                theme={index === 1 ? 'green' : 'sky'}
+              />
+            </div>
+          )}
+
           <div className={styles.knobWrapper}>
             <Knob
               valueMin={0}
               valueMax={360}
+              valueDefault={phase}
               onValueRawChange={handlePhaseChange}
               label="Phase"
               theme={index === 1 ? 'green' : 'sky'}
@@ -261,6 +301,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
               <Knob
                 valueMin={0}
                 valueMax={1}
+                valueDefault={pulseWidth}
                 onValueRawChange={handlePulseWidthChange}
                 label="Width"
                 theme={index === 1 ? 'green' : 'sky'}
@@ -269,10 +310,85 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
           )}
         </div>
 
-        <div className={styles.parameterValue}>
-          <span>Semitones:</span> {semitone > 0 ? `+${semitone}` : semitone}
+        <div className={styles.parameterValues}>
+          <div className={styles.parameterValue}>
+            <span>Semitones:</span> {semitone > 0 ? `+${semitone}` : semitone}
+          </div>
+          {isFat && (
+            <div className={styles.parameterValue}>
+              <span>Spread:</span> {spread}%
+            </div>
+          )}
         </div>
       </div>
+    </div>
+  );
+};
+
+// Create a new component for modulation controls
+const ModulationControls: React.FC = () => {
+  const vcaSettings = useSelector((state: RootState) => state.vcaSettings);
+  const dispatch: AppDispatch = useDispatch();
+
+  const handleModulationTypeChange = (type: ModulationType) => {
+    dispatch(updateVCASettings({ modulationType: type }));
+  };
+
+  const handleModulationAmountChange = (amount: number) => {
+    dispatch(updateVCASettings({ modulationAmount: amount }));
+  };
+
+  return (
+    <div className={styles.modulationSection}>
+      <h3 className={styles.modulationTitle}>Cross Modulation</h3>
+
+      <div className={styles.modulationTypes}>
+        <button
+          className={`${styles.modulationButton} ${
+            vcaSettings.modulationType === 'none' ? styles.active : ''
+          }`}
+          onClick={() => handleModulationTypeChange('none')}
+        >
+          None
+        </button>
+        <button
+          className={`${styles.modulationButton} ${
+            vcaSettings.modulationType === 'hardsync' ? styles.active : ''
+          }`}
+          onClick={() => handleModulationTypeChange('hardsync')}
+        >
+          Hard Sync
+        </button>
+        <button
+          className={`${styles.modulationButton} ${
+            vcaSettings.modulationType === 'ringmod' ? styles.active : ''
+          }`}
+          onClick={() => handleModulationTypeChange('ringmod')}
+        >
+          Ring Mod
+        </button>
+        <button
+          className={`${styles.modulationButton} ${
+            vcaSettings.modulationType === 'fm' ? styles.active : ''
+          }`}
+          onClick={() => handleModulationTypeChange('fm')}
+        >
+          FM
+        </button>
+      </div>
+
+      {vcaSettings.modulationType !== 'none' && (
+        <div className={styles.modulationAmount}>
+          <SteppedKnob
+            valueMin={0}
+            valueMax={100}
+            valueDefault={vcaSettings.modulationAmount}
+            onValueRawChange={handleModulationAmountChange}
+            label="Amount"
+            theme="green"
+          />
+        </div>
+      )}
     </div>
   );
 };
@@ -286,6 +402,7 @@ const OscillatorBank: React.FC = () => {
         <Oscillator index={1} />
         <Oscillator index={2} />
       </div>
+      <ModulationControls />
     </div>
   );
 };

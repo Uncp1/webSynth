@@ -35,6 +35,8 @@ const Key: React.FC<KeyProps> = ({
   isActive,
   onNoteOn,
   onNoteOff,
+  computerKey,
+  showComputerKeys,
 }) => {
   const keyClass = isBlack
     ? `${styles.key} ${styles.blackKey} ${isActive ? styles.activeBlack : ''}`
@@ -63,25 +65,15 @@ const Key: React.FC<KeyProps> = ({
       }}
     >
       <div className={styles.keyLabel}>{note}</div>
-    </div>
-  );
-};
-
-// Computer key mapping display component
-const ComputerKeyMapping: React.FC<{ keyMapping: Record<string, string> }> = ({
-  keyMapping,
-}) => {
-  return (
-    <div className={styles.keyMappingContainer}>
-      <h3>Computer Keyboard Mapping</h3>
-      <div className={styles.keyMappingGrid}>
-        {Object.entries(keyMapping).map(([key, note]) => (
-          <div key={key} className={styles.keyMapItem}>
-            <div className={styles.computerKey}>{key.toUpperCase()}</div>
-            <div className={styles.mappedNote}>{note}</div>
-          </div>
-        ))}
-      </div>
+      {computerKey && showComputerKeys && (
+        <div
+          className={
+            isBlack ? styles.blackKeyComputerKey : styles.whiteKeyComputerKey
+          }
+        >
+          {computerKey.toUpperCase()}
+        </div>
+      )}
     </div>
   );
 };
@@ -92,8 +84,6 @@ const Keyboard: React.FC = () => {
   const [audioStarted, setAudioStarted] = useState(false);
   const [computerKeyboardEnabled, setComputerKeyboardEnabled] = useState(false);
   const [activeNotes, setActiveNotes] = useState<Set<string>>(new Set());
-  const [showKeyMapping, setShowKeyMapping] = useState(false);
-  const [mouseIsDown, setMouseIsDown] = useState(false);
 
   // Ref for tracking active computer keys
   const activeKeys = useRef<Set<string>>(new Set());
@@ -157,7 +147,7 @@ const Keyboard: React.FC = () => {
 
     // Calculate black keys
     for (let octave = baseOctave; octave <= baseOctave + 1; octave++) {
-      whiteNotes.forEach((noteName, index) => {
+      whiteNotes.forEach((noteName) => {
         // Black keys don't exist after E and B
         if (noteName !== 'E' && noteName !== 'B') {
           const note = `${noteName}#${octave}`;
@@ -266,11 +256,6 @@ const Keyboard: React.FC = () => {
     activeKeys.current.clear();
   };
 
-  // Toggle key mapping display
-  const toggleKeyMapping = () => {
-    setShowKeyMapping((prev) => !prev);
-  };
-
   return (
     <div className={styles.keyboardContainer}>
       <h2>Keyboard Controller</h2>
@@ -307,21 +292,8 @@ const Keyboard: React.FC = () => {
           <button className={styles.controlButton} onClick={handlePanic}>
             Panic (All Notes Off)
           </button>
-
-          <button
-            className={`${styles.controlButton} ${
-              showKeyMapping ? styles.activeButton : ''
-            }`}
-            onClick={toggleKeyMapping}
-          >
-            {showKeyMapping ? 'Hide' : 'Show'} Key Mapping
-          </button>
         </div>
       </div>
-
-      {showKeyMapping && computerKeyboardEnabled && (
-        <ComputerKeyMapping keyMapping={keyMapping} />
-      )}
 
       <div className={styles.keyboardWrapper}>
         <div
@@ -331,10 +303,7 @@ const Keyboard: React.FC = () => {
           {/* Render white keys first (lower z-index) */}
           {whiteKeys.map(({ note, left }) => {
             // Find matching computer key if any
-            const computerKey =
-              Object.entries(keyMapping).find(
-                ([, mappedNote]) => mappedNote === note
-              )?.[0] || null;
+            const computerKey = findComputerKey(note, keyMapping);
 
             return (
               <Key
@@ -354,10 +323,7 @@ const Keyboard: React.FC = () => {
           {/* Render black keys on top */}
           {blackKeys.map(({ note, left }) => {
             // Find matching computer key if any
-            const computerKey =
-              Object.entries(keyMapping).find(
-                ([, mappedNote]) => mappedNote === note
-              )?.[0] || null;
+            const computerKey = findComputerKey(note, keyMapping);
 
             return (
               <Key
