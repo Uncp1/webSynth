@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { EnvelopeDestination } from '../components/Envelope/Envelope';
 
 // Define oscillator type
 type OscillatorType =
@@ -37,6 +38,7 @@ interface VCASettingsState {
   semitone2: number; // Semitone shift for oscillator 2 (-24 to +24)
   pulseWidth2: number; // Pulse width for pulse/pwm oscillator types (0-1)
   phase2: number; // Phase offset (0-360 degrees)
+  envelope2Destination: EnvelopeDestination;
 }
 
 // Initial state with default values
@@ -60,6 +62,7 @@ const initialState: VCASettingsState = {
   envelope2Decay: 0.2,
   envelope2Sustain: 0.5,
   envelope2Release: 1,
+  envelope2Destination: 'filter',
   vca2Volume: -12, // 0dB = unity gain
   semitone2: 0,
   pulseWidth2: 0.5,
