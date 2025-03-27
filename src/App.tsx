@@ -10,19 +10,23 @@ import ADSRBank from './components/Envelope/Envelope';
 
 function App() {
   return (
-    <>
+    <div className="synth-container">
       <Provider store={store}>
         <AudioEngineProvider>
-          <section className="controll__container">
-            <VCA />
-            <Filter />
-          </section>
-          <Keyboard />
-          <ADSRBank />
+          <div className="synth-grid">
+            <div className="synth-grid-left">
+              <VCA />
+            </div>
+            <div className="synth-grid-right">
+              <Filter />
+              <ADSRBank />
+            </div>
+          </div>
           <Oscilloscope />
+          <Keyboard />
         </AudioEngineProvider>
       </Provider>
-    </>
+    </div>
   );
 }
 

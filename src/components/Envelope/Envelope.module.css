@@ -1,91 +1,136 @@
+/* src/components/Envelope/Envelope.module.css */
 .adsrBank {
-  background-color: #282c34;
-  padding: 20px;
-  border-radius: 8px;
-  color: #ffffff;
-  margin: 20px auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .bankTitle {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 10px;
+  padding-bottom: 0.8rem;
 }
 
 .adsrSection {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  gap: 1.5rem;
+  justify-content: space-between;
 }
 
 .adsr {
   flex: 1;
   min-width: 300px;
-  max-width: 400px;
-  background-color: #1a1d23;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-tertiary);
+  border-radius: 10px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   border-top: 3px solid transparent;
 }
 
 /* Theme colors for oscillator 1 and 2 */
 .osc1Theme {
-  border-color: #48bb78; /* Green */
+  border-color: var(--accent-green);
 }
 
 .osc2Theme {
-  border-color: #4299e1; /* Blue */
+  border-color: var(--accent-blue);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 10px;
+  padding-bottom: 0.7rem;
 }
 
 .title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
 }
 
+.destinationSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.destinationSelector label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.selector {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.selector:focus {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
 .visualizer {
   background-color: #121417;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 15px;
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 120px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.visualizer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 0, 0.15) 0%,
+    rgba(255, 255, 0, 0.15) 50%,
+    rgba(255, 0, 0, 0.15) 100%
+  );
+  opacity: 0.25;
+  pointer-events: none;
 }
 
 .canvas {
   width: 100%;
-  height: 150px;
-  border-radius: 2px;
+  height: 100%;
+  border-radius: 4px;
 }
 
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1.2rem;
 }
 
 .knobRow {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 0.5rem;
 }
 
 .knobWrapper {
@@ -97,22 +142,50 @@
 .parameterValues {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 0.8rem;
   background-color: rgba(255, 255, 255, 0.05);
-  padding: 8px;
+  padding: 0.6rem;
   border-radius: 4px;
 }
 
 .parameterValue {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   flex: 1;
 }
 
 .parameterValue span {
-  color: #a0aec0;
-  font-size: 0.8rem;
-  margin-right: 5px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin-right: 0.3rem;
+}
+
+/* ADSR visualization */
+.adsrVisualization {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background-color: #121417;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.adsrPath {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  stroke: var(--accent-green);
+  stroke-width: 2;
+  fill: none;
+  filter: drop-shadow(0 0 3px rgba(157, 206, 106, 0.5));
+}
+
+.osc2Theme .adsrPath {
+  stroke: var(--accent-blue);
+  filter: drop-shadow(0 0 3px rgba(122, 162, 247, 0.5));
 }
 
 /* Animations */
@@ -131,15 +204,21 @@
 @media (max-width: 768px) {
   .adsrSection {
     flex-direction: column;
-    align-items: center;
   }
 
   .adsr {
-    min-width: 280px;
+    min-width: 100%;
     max-width: 100%;
   }
 
-  .knobRow {
-    gap: 10px;
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .destinationSelector {
+    width: 100%;
+    justify-content: space-between;
   }
 }
