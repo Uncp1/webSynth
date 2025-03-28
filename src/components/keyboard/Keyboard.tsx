@@ -258,8 +258,6 @@ const Keyboard: React.FC = () => {
 
   return (
     <div className={styles.keyboardContainer}>
-      <h2>Keyboard Controller</h2>
-
       <div className={styles.controls}>
         <div className={styles.octaveControls}>
           <button

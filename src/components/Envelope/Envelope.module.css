@@ -1,70 +1,71 @@
-/* src/components/Envelope/Envelope.module.css */
 .adsrBank {
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  border-radius: 12px;
+  width: 100%;
   color: var(--text-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  margin: 0;
 }
 
 .bankTitle {
-  font-size: 1.5rem;
-  margin-bottom: 1.2rem;
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.8rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .adsrSection {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .adsr {
-  flex: 1;
-  min-width: 300px;
   background-color: var(--bg-tertiary);
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  border-top: 3px solid transparent;
+  border-radius: 6px;
+  padding: 0.8rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
 }
 
 /* Theme colors for oscillator 1 and 2 */
 .osc1Theme {
-  border-color: var(--accent-green);
+  border-left-color: var(--accent-green);
 }
 
 .osc2Theme {
-  border-color: var(--accent-blue);
+  border-left-color: var(--accent-blue);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.7rem;
+  padding-bottom: 0.5rem;
 }
 
 .title {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   margin: 0;
   font-weight: 600;
+  text-transform: uppercase;
+}
+
+.title::before {
+  content: '▼';
+  margin-right: 0.3rem;
+  font-size: 0.7rem;
 }
 
 .destinationSelector {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .destinationSelector label {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
   color: var(--text-secondary);
 }
 
@@ -72,132 +73,64 @@
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
   border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
   cursor: pointer;
 }
 
 .selector:focus {
   outline: 2px solid var(--accent-blue);
-  outline-offset: 2px;
-}
-
-.visualizer {
-  background-color: #121417;
-  border-radius: 6px;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 120px;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
-  position: relative;
-  overflow: hidden;
-}
-
-.visualizer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(0, 255, 0, 0.15) 0%,
-    rgba(255, 255, 0, 0.15) 50%,
-    rgba(255, 0, 0, 0.15) 100%
-  );
-  opacity: 0.25;
-  pointer-events: none;
-}
-
-.canvas {
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
+  outline-offset: 1px;
 }
 
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.8rem;
+}
+
+.controlRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.controlLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .knobRow {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .knobWrapper {
   text-align: center;
-  flex: 1;
-  min-width: 60px;
 }
 
 .parameterValues {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.8rem;
+  margin-top: 0.6rem;
   background-color: rgba(255, 255, 255, 0.05);
-  padding: 0.6rem;
-  border-radius: 4px;
+  padding: 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
 }
 
 .parameterValue {
   text-align: center;
-  font-size: 0.85rem;
   flex: 1;
 }
 
 .parameterValue span {
   color: var(--text-secondary);
-  font-size: 0.75rem;
-  margin-right: 0.3rem;
-}
-
-/* ADSR visualization */
-.adsrVisualization {
-  position: relative;
-  width: 100%;
-  height: 120px;
-  background-color: #121417;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  overflow: hidden;
-}
-
-.adsrPath {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  stroke: var(--accent-green);
-  stroke-width: 2;
-  fill: none;
-  filter: drop-shadow(0 0 3px rgba(157, 206, 106, 0.5));
-}
-
-.osc2Theme .adsrPath {
-  stroke: var(--accent-blue);
-  filter: drop-shadow(0 0 3px rgba(122, 162, 247, 0.5));
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-right: 0.2rem;
 }
 
 /* Media queries for responsiveness */
@@ -214,7 +147,7 @@
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .destinationSelector {

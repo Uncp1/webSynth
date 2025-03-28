@@ -6,7 +6,7 @@ import { Knob } from '../knobs/Knob';
 import { SteppedKnob } from '../knobs/SteppedKnob';
 import styles from './VCA.module.css';
 
-// Oscillator waveform type
+// Переделать на импорт из store
 type OscillatorType =
   | 'sine'
   | 'square'
@@ -15,19 +15,16 @@ type OscillatorType =
   | 'pulse'
   | 'pwm';
 
-// Modulation types
 type ModulationType = 'none' | 'hardsync' | 'ringmod' | 'fm';
 
 interface OscillatorProps {
   index: 1 | 2; // Either oscillator 1 or 2
 }
 
-// Oscillator label display component
 const OscillatorLabel: React.FC<{ type: OscillatorType; isFat: boolean }> = ({
   type,
   isFat,
 }) => {
-  // Get display name based on oscillator type
   const getDisplayName = (type: OscillatorType) => {
     switch (type) {
       case 'sine':
@@ -74,22 +71,48 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
   // Local states for additional UI elements
   const [showWaveformSelector, setShowWaveformSelector] = useState(false);
 
+  // Check if oscillator type is pulse or pwm
+  const isPulseOrPWM = oscillatorType === 'pulse' || oscillatorType === 'pwm';
+
   // Define handler functions
   const handleOscillatorTypeChange = (newType: OscillatorType) => {
     if (index === 1) {
-      dispatch(updateVCASettings({ oscillator1Type: newType }));
+      // If switching to pulse/pwm, disable FAT mode
+      if ((newType === 'pulse' || newType === 'pwm') && isFat) {
+        dispatch(
+          updateVCASettings({
+            oscillator1Type: newType,
+            isFat1: false,
+          })
+        );
+      } else {
+        dispatch(updateVCASettings({ oscillator1Type: newType }));
+      }
     } else {
-      dispatch(updateVCASettings({ oscillator2Type: newType }));
+      // If switching to pulse/pwm, disable FAT mode
+      if ((newType === 'pulse' || newType === 'pwm') && isFat) {
+        dispatch(
+          updateVCASettings({
+            oscillator2Type: newType,
+            isFat2: false,
+          })
+        );
+      } else {
+        dispatch(updateVCASettings({ oscillator2Type: newType }));
+      }
     }
     // Hide selector after selection
     setShowWaveformSelector(false);
   };
 
   const handleFatToggle = () => {
-    if (index === 1) {
-      dispatch(updateVCASettings({ isFat1: !isFat }));
-    } else {
-      dispatch(updateVCASettings({ isFat2: !isFat }));
+    // Only allow toggle if not pulse or pwm
+    if (!isPulseOrPWM) {
+      if (index === 1) {
+        dispatch(updateVCASettings({ isFat1: !isFat }));
+      } else {
+        dispatch(updateVCASettings({ isFat2: !isFat }));
+      }
     }
   };
 
@@ -220,12 +243,15 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
             className={styles.waveformSelector}
             onClick={() => setShowWaveformSelector(!showWaveformSelector)}
           >
-            {showWaveformSelector ? 'Hide Waveforms' : 'Select Waveform'}
+            {showWaveformSelector ? 'Hide' : 'Wave'}
           </button>
 
           <button
-            className={`${styles.fatButton} ${isFat ? styles.active : ''}`}
+            className={`${styles.fatButton} ${isFat ? styles.active : ''} ${
+              isPulseOrPWM ? styles.disabled : ''
+            }`}
             onClick={handleFatToggle}
+            disabled={isPulseOrPWM}
           >
             FAT
           </button>
@@ -246,7 +272,41 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
               theme={index === 1 ? 'green' : 'sky'}
             />
           </div>
+          <div className={styles.knobWrapper}>
+            <Knob
+              valueMin={0}
+              valueMax={360}
+              valueDefault={phase}
+              onValueRawChange={handlePhaseChange}
+              label="Phase"
+              theme={index === 1 ? 'green' : 'sky'}
+            />
+          </div>
+          {isFat && (
+            <div className={styles.knobWrapper}>
+              <SteppedKnob
+                valueMin={0}
+                valueMax={100}
+                valueDefault={spread}
+                onValueRawChange={handleSpreadChange}
+                label="Spread"
+                theme={index === 1 ? 'green' : 'sky'}
+              />
+            </div>
+          )}
 
+          {(oscillatorType === 'pulse' || oscillatorType === 'pwm') && (
+            <div className={styles.knobWrapper}>
+              <Knob
+                valueMin={0}
+                valueMax={1}
+                valueDefault={pulseWidth}
+                onValueRawChange={handlePulseWidthChange}
+                label="Width"
+                theme={index === 1 ? 'green' : 'sky'}
+              />
+            </div>
+          )}
           <div className={styles.knobWrapper}>
             <SteppedKnob
               valueMin={-24}
@@ -268,57 +328,6 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
               theme={index === 1 ? 'green' : 'sky'}
             />
           </div>
-        </div>
-
-        <div className={styles.knobRow}>
-          {/* Spread control is only visible when fat mode is on */}
-          {isFat && (
-            <div className={styles.knobWrapper}>
-              <SteppedKnob
-                valueMin={0}
-                valueMax={100}
-                valueDefault={spread}
-                onValueRawChange={handleSpreadChange}
-                label="Spread"
-                theme={index === 1 ? 'green' : 'sky'}
-              />
-            </div>
-          )}
-
-          <div className={styles.knobWrapper}>
-            <Knob
-              valueMin={0}
-              valueMax={360}
-              valueDefault={phase}
-              onValueRawChange={handlePhaseChange}
-              label="Phase"
-              theme={index === 1 ? 'green' : 'sky'}
-            />
-          </div>
-
-          {(oscillatorType === 'pulse' || oscillatorType === 'pwm') && (
-            <div className={styles.knobWrapper}>
-              <Knob
-                valueMin={0}
-                valueMax={1}
-                valueDefault={pulseWidth}
-                onValueRawChange={handlePulseWidthChange}
-                label="Width"
-                theme={index === 1 ? 'green' : 'sky'}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className={styles.parameterValues}>
-          <div className={styles.parameterValue}>
-            <span>Semitones:</span> {semitone > 0 ? `+${semitone}` : semitone}
-          </div>
-          {isFat && (
-            <div className={styles.parameterValue}>
-              <span>Spread:</span> {spread}%
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -393,7 +402,6 @@ const ModulationControls: React.FC = () => {
   );
 };
 
-// Oscillator bank component
 const OscillatorBank: React.FC = () => {
   return (
     <div className={styles.oscillatorBank}>
@@ -402,7 +410,7 @@ const OscillatorBank: React.FC = () => {
         <Oscillator index={1} />
         <Oscillator index={2} />
       </div>
-      <ModulationControls />
+      {/*  <ModulationControls />  */}
     </div>
   );
 };
