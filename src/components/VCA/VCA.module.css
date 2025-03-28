@@ -1,38 +1,34 @@
 .oscillatorBank {
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  border-radius: 12px;
+  width: 100%;
   color: var(--text-primary);
-  margin: 0 0 1.5rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 0;
 }
 
 .bankTitle {
-  font-size: 1.5rem;
-  margin-bottom: 1.2rem;
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.8rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
+/* Vertical layout with oscillator 1 on top, oscillator 2 below */
 .oscillatorSection {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1.5rem;
-  justify-content: space-between;
   margin-bottom: 1.5rem;
 }
 
 .oscillator {
   flex: 1;
-  min-width: 260px;
   background-color: var(--bg-tertiary);
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  padding: 0.8rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
   border-top: 3px solid transparent;
-  position: relative;
+  min-width: 0; /* Allow shrinking below content size */
 }
 
 .oscillator.disabled {
@@ -40,46 +36,52 @@
   filter: grayscale(40%);
 }
 
-/* Theme colors for oscillator 1 and 2 */
+/* Theme colors for oscillator 1, 2, and 3 */
 .osc1Theme {
-  border-color: var(--accent-green);
+  border-top-color: var(--accent-green);
 }
 
 .osc2Theme {
-  border-color: var(--accent-blue);
+  border-top-color: var(--accent-blue);
+}
+
+.osc3Theme {
+  border-top-color: var(--accent-purple);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.7rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .title {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   margin: 0;
   font-weight: 600;
+  text-transform: uppercase;
 }
 
 .currentType {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  background-color: rgba(255, 255, 255, 0.07);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .toggleButton {
   border: none;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: bold;
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .toggleButton.enabled {
@@ -88,54 +90,44 @@
 }
 
 .toggleButton.disabled {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
 }
 
 .waveformSection {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.8rem;
 }
 
 .waveformControls {
   display: flex;
-  gap: 0.7rem;
-  margin-bottom: 0.8rem;
-  align-items: stretch;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
 }
 
 .waveformSelector {
   flex: 1;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  border: none;
-  padding: 0.6rem 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 0.85rem;
   text-align: center;
-}
-
-.waveformSelector:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fatButton {
-  background-color: rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  background-color: rgba(255, 255, 255, 0.07);
   color: var(--text-primary);
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.85rem;
-  font-weight: bold;
-  padding: 0.6rem 0.8rem;
-  white-space: nowrap;
-  min-width: 60px;
 }
 
-.fatButton:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+.fatButton:hover:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .fatButton.active {
@@ -143,168 +135,146 @@
   color: #121212;
 }
 
-.osc1Theme .fatButton.active {
-  background-color: var(--accent-green);
+.fatButton.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
 }
 
-.osc2Theme .fatButton.active {
-  background-color: var(--accent-blue);
-}
-
+/* Waveform grid styles */
 .waveformGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-top: 0.8rem;
-  animation: fadeIn 0.3s ease;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
 }
 
 .waveformButton {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.07);
   color: var(--text-primary);
   border: none;
-  padding: 0.5rem 0;
-  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: capitalize;
 }
 
 .waveformButton:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .waveformButton.active {
   background-color: var(--accent-green);
   color: #121212;
-  font-weight: bold;
+  font-weight: 500;
 }
 
-.oscillator.osc2Theme .waveformButton.active {
-  background-color: var(--accent-blue);
-}
-
+/* Make knobs row horizontal */
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.6rem;
 }
 
 .knobRow {
   display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 0.8rem;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
 }
 
 .knobWrapper {
   text-align: center;
-}
-
-.parameterValues {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.8rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 0.6rem;
-  border-radius: 4px;
-}
-
-.parameterValue {
-  font-size: 0.85rem;
-  text-align: center;
   flex: 1;
+  min-width: 0; /* Allow shrinking below content size */
 }
 
-.parameterValue span {
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  margin-right: 0.3rem;
-}
-
-/* Modulation section styles */
+/* Horizontal modulation section */
 .modulationSection {
   background-color: var(--bg-tertiary);
-  border-radius: 10px;
-  padding: 1.2rem;
-  margin-top: 1.5rem;
-  border-top: 3px solid var(--accent-purple);
-  animation: fadeIn 0.3s ease;
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-top: 0.5rem;
+  border-top: 3px solid var(--accent-orange);
 }
 
 .modulationTitle {
-  font-size: 1.2rem;
-  margin: 0 0 1rem 0;
-  text-align: center;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
   font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.7rem;
+  text-transform: uppercase;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .modulationTypes {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  justify-content: center;
-  margin-bottom: 1.2rem;
+  flex-wrap: nowrap;
+  gap: 0.3rem;
+  margin-bottom: 0.8rem;
+  overflow-x: auto;
 }
 
 .modulationButton {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.07);
   color: var(--text-primary);
   border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  flex: 1;
+  text-align: center;
 }
 
 .modulationButton:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .modulationButton.active {
-  background-color: var(--accent-purple);
+  background-color: var(--accent-orange);
   color: #121212;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .modulationAmount {
   display: flex;
   justify-content: center;
-  margin-top: 1.2rem;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  align-items: center;
+  margin-top: 0.8rem;
 }
 
 /* Media queries */
+@media (max-width: 1024px) {
+  .oscillatorSection {
+    flex-direction: column;
+  }
+
+  .modulationTypes {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 768px) {
   .oscillatorSection {
     flex-direction: column;
   }
 
-  .oscillator {
-    min-width: 100%;
-    max-width: 100%;
-  }
-
   .modulationTypes {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 
-  .modulationButton {
-    width: 100%;
+  .knobRow {
+    flex-wrap: wrap;
+  }
+
+  .knobWrapper {
+    min-width: 60px;
   }
 }

@@ -16,6 +16,98 @@
   padding-bottom: 0.8rem;
 }
 
+/* Distortion styles */
+.distortionSection {
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-left: 3px solid var(--accent-orange);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.7rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.toggleButton {
+  border: none;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+}
+
+.toggleButton.active {
+  background-color: var(--accent-orange);
+  color: #121212;
+}
+
+.distortionControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.distortionControls.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.distortionTypeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  gap: 0.5rem;
+}
+
+.distortionTypeLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.distortionTypeSelector {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+.distortionTypeSelector:focus {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 1rem 0 1.5rem;
+}
+
+/* Original filter styles */
 .filter__controls {
   display: flex;
   justify-content: center;
@@ -45,9 +137,15 @@
 
 /* Media queries */
 @media (max-width: 768px) {
-  .filter__controls {
+  .filter__controls,
+  .distortionControls {
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
+  }
+
+  .distortionTypeContainer {
+    width: 100%;
+    max-width: 200px;
   }
 }

@@ -13,17 +13,29 @@ function App() {
     <div className="synth-container">
       <Provider store={store}>
         <AudioEngineProvider>
+          {/* Main synth grid - 3 columns instead of 2-column layout */}
           <div className="synth-grid">
-            <div className="synth-grid-left">
+            {/* Column 1: Oscillators */}
+            <div className="synth-column">
               <VCA />
             </div>
-            <div className="synth-grid-right">
+
+            {/* Column 2: Filter */}
+            <div className="synth-column">
               <Filter />
+            </div>
+
+            {/* Column 3: Envelopes */}
+            <div className="synth-column">
               <ADSRBank />
             </div>
           </div>
-          <Oscilloscope />
-          <Keyboard />
+
+          {/* Bottom panels */}
+          <div className="synth-bottom-panels">
+            <Oscilloscope />
+            <Keyboard />
+          </div>
         </AudioEngineProvider>
       </Provider>
     </div>

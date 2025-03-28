@@ -18,6 +18,7 @@ interface AudioEngineContextProps {
   vca2: Tone.Volume;
   analyser: Tone.Analyser;
   filterEnvelope: Tone.Envelope;
+  distortion: Tone.Distortion; // Added distortion node
 }
 
 const AudioEngineContext = createContext<AudioEngineContextProps | null>(null);
@@ -110,6 +111,16 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
         type: filterSettings.type || 'lowpass',
         frequency: filterSettings.frequency || 1000,
         Q: filterSettings.Q || 1,
+      }),
+    []
+  );
+
+  // Create distortion node
+  const distortion = useMemo(
+    () =>
+      new Tone.Distortion({
+        distortion: filterSettings.distortionAmount || 0.3,
+        wet: filterSettings.distortionEnabled ? 1 : 0,
       }),
     []
   );
@@ -252,6 +263,50 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [filter, filterEnvScaler, filterSettings]);
 
+  // Update distortion settings when they change
+  useEffect(() => {
+    // Update distortion amount
+    distortion.distortion = filterSettings.distortionAmount;
+
+    // Update distortion wet value (0 = off, 1 = on)
+    distortion.wet.value = filterSettings.distortionEnabled ? 1 : 0;
+
+    // Apply different distortion curves based on distortion type
+    if (filterSettings.distortionType === 'soft') {
+      // Default soft clipping
+      // No change needed as Tone.Distortion uses tanh by default
+    } else if (filterSettings.distortionType === 'hard') {
+      // Hard clipping curve
+      const samples = 8192;
+      const curve = new Float32Array(samples);
+      const threshold = 0.5;
+
+      for (let i = 0; i < samples; ++i) {
+        const x = (i * 2) / samples - 1;
+        curve[i] = x === 0 ? 0 : Math.max(Math.min(x, threshold), -threshold);
+      }
+
+      distortion.curve = curve;
+    } else if (filterSettings.distortionType === 'fuzz') {
+      // Fuzz-style distortion with more aggressive curve
+      const samples = 8192;
+      const curve = new Float32Array(samples);
+
+      for (let i = 0; i < samples; ++i) {
+        const x = (i * 2) / samples - 1;
+        // Aggressive fuzz-style transfer function
+        curve[i] = Math.tanh(Math.pow(Math.abs(x), 0.3) * 8 * Math.sign(x));
+      }
+
+      distortion.curve = curve;
+    }
+  }, [
+    distortion,
+    filterSettings.distortionAmount,
+    filterSettings.distortionEnabled,
+    filterSettings.distortionType,
+  ]);
+
   // Handle envelope destination changes and connections
   useEffect(() => {
     // First, disconnect any existing connections to start fresh
@@ -390,6 +445,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
       vca1.disconnect();
       vca2.disconnect();
       filter.disconnect();
+      distortion.disconnect();
 
       if (modulationNodeRef.current) {
         modulationNodeRef.current.disconnect();
@@ -403,10 +459,11 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     synth1.connect(vca1);
     synth2.connect(vca2);
 
-    // Now connect VCAs to filter, filter to analyzer, analyzer to destination
+    // Now connect VCAs to filter, filter to distortion, distortion to analyzer, analyzer to destination
     vca1.connect(filter);
     vca2.connect(filter);
-    filter.connect(analyser);
+    filter.connect(distortion);
+    distortion.connect(analyser);
     analyser.connect(Tone.Destination);
 
     return () => {
@@ -416,6 +473,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
       vca1.disconnect();
       vca2.disconnect();
       filter.disconnect();
+      distortion.disconnect();
       analyser.disconnect();
       if (modulationNodeRef.current) {
         modulationNodeRef.current.disconnect();
@@ -427,6 +485,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     vca1,
     vca2,
     filter,
+    distortion,
     analyser,
     vcaSettings.modulationType,
   ]);
@@ -439,6 +498,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     filter,
     filterEnvelope,
     analyser,
+    distortion, // Export distortion in the context
   };
 
   return (
