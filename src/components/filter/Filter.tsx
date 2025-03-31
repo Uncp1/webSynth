@@ -54,7 +54,7 @@ const Filter: React.FC = () => {
     <div className={styles.filter}>
       <h2 className={styles.filter__title}>Filter Controls</h2>
 
-      {/* Distortion Section */}
+      {/* WIP! Distortion Section  */}
       <div className={styles.distortionSection}>
         <div className={styles.sectionHeader}>
           <h3 className={styles.sectionTitle}>Distortion</h3>

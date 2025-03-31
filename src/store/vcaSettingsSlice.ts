@@ -1,24 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EnvelopeDestination } from '../components/Envelope/Envelope';
+import { ModulationType, OscillatorType } from '../synth/types';
 
-// Define oscillator type
-type OscillatorType =
-  | 'sine'
-  | 'square'
-  | 'triangle'
-  | 'sawtooth'
-  | 'pulse'
-  | 'pwm'
-  | 'custom';
-
-// Define modulation type
-type ModulationType = 'none' | 'hardsync' | 'ringmod' | 'fm';
-
-// Define the state interface for VCA settings
 interface VCASettingsState {
-  // VCA 1 parameters
   oscillator1Type: OscillatorType;
-  isFat1: boolean; // Toggle for fat mode
+  isFat1: boolean;
   detune1: number;
   envelope1Attack: number;
   envelope1Decay: number;
@@ -30,9 +16,8 @@ interface VCASettingsState {
   pulseWidth1: number; // Pulse width for pulse/pwm oscillator types (0-1)
   phase1: number; // Phase offset (0-360 degrees)
 
-  // VCA 2 parameters
   oscillator2Type: OscillatorType;
-  isFat2: boolean; // Toggle for fat mode
+  isFat2: boolean;
   detune2: number;
   envelope2Attack: number;
   envelope2Decay: number;
@@ -45,48 +30,42 @@ interface VCASettingsState {
   phase2: number; // Phase offset (0-360 degrees)
   envelope2Destination: EnvelopeDestination;
 
-  // Modulation parameters
-  modulationType: ModulationType; // Type of modulation
-  modulationAmount: number; // Amount of modulation (0-100)
+  modulationType: ModulationType;
+  modulationAmount: number;
 }
 
-// Initial state with default values
 const initialState: VCASettingsState = {
-  // VCA 1 defaults
   oscillator1Type: 'sawtooth',
-  isFat1: false, // Start with regular oscillator
+  isFat1: false,
   detune1: 0,
   envelope1Attack: 0.01,
   envelope1Decay: 0.2,
   envelope1Sustain: 0.5,
   envelope1Release: 1,
-  vca1Volume: -12, // 0dB = unity gain
+  vca1Volume: -12,
   semitone1: 0,
-  spread1: 20, // Default spread when fat is enabled
+  spread1: 20,
   pulseWidth1: 0.5,
   phase1: 0,
 
-  // VCA 2 defaults
   oscillator2Type: 'square',
-  isFat2: false, // Start with regular oscillator
+  isFat2: false,
   detune2: 0,
   envelope2Attack: 0.01,
   envelope2Decay: 0.2,
   envelope2Sustain: 0.5,
   envelope2Release: 1,
   envelope2Destination: 'filter',
-  vca2Volume: -12, // 0dB = unity gain
+  vca2Volume: -12,
   semitone2: 0,
-  spread2: 20, // Default spread when fat is enabled
+  spread2: 20,
   pulseWidth2: 0.5,
   phase2: 0,
 
-  // Modulation defaults
   modulationType: 'none',
   modulationAmount: 0,
 };
 
-// Create the slice
 const vcaSettingsSlice = createSlice({
   name: 'vcaSettings',
   initialState,
@@ -103,6 +82,5 @@ const vcaSettingsSlice = createSlice({
   },
 });
 
-// Export actions and reducer
 export const { updateVCASettings, resetVCASettings } = vcaSettingsSlice.actions;
 export default vcaSettingsSlice.reducer;

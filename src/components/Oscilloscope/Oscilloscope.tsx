@@ -114,17 +114,11 @@ const Oscilloscope: React.FC = () => {
         // Draw the frequency bars
         const barWidth = canvas.width / data.length;
 
-        // Track if we have any significant frequency content
-        let hasSignal = false;
-
         // Draw frequency bars
         for (let i = 0; i < data.length; i++) {
           // FFT data is in dB (-100 to 0), normalize to 0-1 range
           const dbValue = data[i] as number;
           const normalizedValue = (dbValue + 100) / 100; // Map -100..0 to 0..1
-
-          // Check if we have signal
-          if (normalizedValue > 0.2) hasSignal = true;
 
           const barHeight = normalizedValue * canvas.height;
 

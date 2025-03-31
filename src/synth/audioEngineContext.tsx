@@ -21,6 +21,8 @@ interface AudioEngineContextProps {
   distortion: Tone.Distortion; // Added distortion node
 }
 
+// Нужно реорганизовать код и разбить на модули
+
 const AudioEngineContext = createContext<AudioEngineContextProps | null>(null);
 
 export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -265,17 +267,13 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Update distortion settings when they change
   useEffect(() => {
-    // Update distortion amount
     distortion.distortion = filterSettings.distortionAmount;
 
-    // Update distortion wet value (0 = off, 1 = on)
+    // изменить позже, тк это крайне коряво
     distortion.wet.value = filterSettings.distortionEnabled ? 1 : 0;
 
-    // Apply different distortion curves based on distortion type
-    if (filterSettings.distortionType === 'soft') {
-      // Default soft clipping
-      // No change needed as Tone.Distortion uses tanh by default
-    } else if (filterSettings.distortionType === 'hard') {
+    // Чекнуть код позже, возможно он излишен
+    if (filterSettings.distortionType === 'hard') {
       // Hard clipping curve
       const samples = 8192;
       const curve = new Float32Array(samples);
@@ -397,7 +395,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
       return synth1;
     };
 
-    // Same for synth2
     synth2.triggerAttack = (notes, time, velocity) => {
       origSynth2TriggerAttack(notes, time, velocity);
 
@@ -444,8 +441,8 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
       synth2.disconnect();
       vca1.disconnect();
       vca2.disconnect();
-      filter.disconnect();
       distortion.disconnect();
+      filter.disconnect();
 
       if (modulationNodeRef.current) {
         modulationNodeRef.current.disconnect();
@@ -455,25 +452,22 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
       console.warn('Error disconnecting nodes');
     }
 
-    // Simple routing without modulation for now
     synth1.connect(vca1);
     synth2.connect(vca2);
 
-    // Now connect VCAs to filter, filter to distortion, distortion to analyzer, analyzer to destination
-    vca1.connect(filter);
-    vca2.connect(filter);
-    filter.connect(distortion);
-    distortion.connect(analyser);
+    vca1.connect(distortion);
+    vca2.connect(distortion);
+    distortion.connect(filter);
+    filter.connect(analyser);
     analyser.connect(Tone.Destination);
 
     return () => {
-      // Cleanup function
       synth1.disconnect();
       synth2.disconnect();
       vca1.disconnect();
       vca2.disconnect();
-      filter.disconnect();
       distortion.disconnect();
+      filter.disconnect();
       analyser.disconnect();
       if (modulationNodeRef.current) {
         modulationNodeRef.current.disconnect();
@@ -498,7 +492,7 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
     filter,
     filterEnvelope,
     analyser,
-    distortion, // Export distortion in the context
+    distortion,
   };
 
   return (
@@ -508,7 +502,6 @@ export const AudioEngineProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// Moving this function outside the component to help with fast refresh
 export const useAudioEngine = () => {
   const context = useContext(AudioEngineContext);
   if (!context) {
