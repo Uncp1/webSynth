@@ -161,7 +161,7 @@
   background: linear-gradient(to bottom, #333, #222);
 }
 
-/* Computer keyboard mapping display */
+/* Computer keyboard mapping display, Change later looks agly asf*/
 .keyMappingContainer {
   background-color: #1a1d23;
   padding: 15px;
@@ -208,7 +208,6 @@
   color: #bbf7d0;
 }
 
-/* Media queries for responsiveness */
 @media (max-width: 768px) {
   .keyboardWrapper {
     padding: 10px;

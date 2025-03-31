@@ -22,7 +22,7 @@ export function Knob({
   valueMin,
   valueMax,
   onValueRawChange,
-  valueDefault = valueMin, // проблема здесь!!!!
+  valueDefault = valueMin,
   ...props
 }: KnobProps) {
   // Функции шага: постоянный шаг в 0.1 и увеличенный шаг 1

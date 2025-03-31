@@ -5,20 +5,10 @@ import { updateVCASettings } from '../../store/vcaSettingsSlice';
 import { Knob } from '../knobs/Knob';
 import { SteppedKnob } from '../knobs/SteppedKnob';
 import styles from './VCA.module.css';
-
-// Переделать на импорт из store
-type OscillatorType =
-  | 'sine'
-  | 'square'
-  | 'triangle'
-  | 'sawtooth'
-  | 'pulse'
-  | 'pwm';
-
-type ModulationType = 'none' | 'hardsync' | 'ringmod' | 'fm';
+import { ModulationType, OscillatorType } from '../../synth/types';
 
 interface OscillatorProps {
-  index: 1 | 2; // Either oscillator 1 or 2
+  index: 1 | 2;
 }
 
 const OscillatorLabel: React.FC<{ type: OscillatorType; isFat: boolean }> = ({
@@ -68,13 +58,10 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
     index === 1 ? vcaSettings.pulseWidth1 : vcaSettings.pulseWidth2;
   const phase = index === 1 ? vcaSettings.phase1 : vcaSettings.phase2;
 
-  // Local states for additional UI elements
   const [showWaveformSelector, setShowWaveformSelector] = useState(false);
 
-  // Check if oscillator type is pulse or pwm
   const isPulseOrPWM = oscillatorType === 'pulse' || oscillatorType === 'pwm';
 
-  // Define handler functions
   const handleOscillatorTypeChange = (newType: OscillatorType) => {
     if (index === 1) {
       // If switching to pulse/pwm, disable FAT mode
@@ -101,7 +88,6 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
         dispatch(updateVCASettings({ oscillator2Type: newType }));
       }
     }
-    // Hide selector after selection
     setShowWaveformSelector(false);
   };
 
@@ -164,7 +150,6 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
     }
   };
 
-  // Toggle the oscillator on/off
   const [isEnabled, setIsEnabled] = useState(true);
 
   const handleToggle = () => {
@@ -187,7 +172,6 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
     }
   };
 
-  // Function to render waveform buttons grid
   const renderWaveformButtons = () => {
     const waveforms: OscillatorType[] = [
       'sine',
@@ -215,7 +199,6 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
     );
   };
 
-  // Get appropriate color based on oscillator index
   const themeColor = index === 1 ? styles.osc1Theme : styles.osc2Theme;
 
   return (
@@ -334,7 +317,7 @@ const Oscillator: React.FC<OscillatorProps> = ({ index }) => {
   );
 };
 
-// Create a new component for modulation controls
+// Не работает ничего, переделать в контексте
 const ModulationControls: React.FC = () => {
   const vcaSettings = useSelector((state: RootState) => state.vcaSettings);
   const dispatch: AppDispatch = useDispatch();

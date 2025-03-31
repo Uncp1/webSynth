@@ -52,13 +52,10 @@ export function KnobBase({
   const stepLarger = stepLargerFn(valueRaw);
   const dragSensitivity = 0.006;
 
-  // Reference to the knob container element
   const knobContainerRef = useRef<HTMLDivElement>(null);
 
-  // Store the ORIGINAL default value in a ref so it doesn't change with prop updates
   const originalDefaultRef = useRef<number>(valueDefault);
 
-  // Обработчик, который обновляет локальное состояние и вызывает переданный колбэк (если есть)
   const handleValueRawChange = (newValue: number) => {
     setValueRaw(newValue);
     if (onValueRawChange) {
@@ -66,12 +63,10 @@ export function KnobBase({
     }
   };
 
-  // Update value when valueDefault changes (from Redux)
   useEffect(() => {
     setValueRaw(valueDefault);
   }, [valueDefault]);
 
-  // Reset to ORIGINAL default value on double-click
   const resetToDefault = () => {
     const originalDefault = originalDefaultRef.current;
     setValueRaw(originalDefault);
@@ -92,7 +87,6 @@ export function KnobBase({
 
     knobElement.addEventListener('dblclick', handleDoubleClick);
 
-    // Cleanup
     return () => {
       knobElement.removeEventListener('dblclick', handleDoubleClick);
     };

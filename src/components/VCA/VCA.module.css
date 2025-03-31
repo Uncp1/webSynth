@@ -12,7 +12,6 @@
   font-weight: 600;
 }
 
-/* Vertical layout with oscillator 1 on top, oscillator 2 below */
 .oscillatorSection {
   display: flex;
   flex-direction: column;
@@ -28,7 +27,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
   border-top: 3px solid transparent;
-  min-width: 0; /* Allow shrinking below content size */
+  min-width: 0;
 }
 
 .oscillator.disabled {
@@ -142,7 +141,6 @@
   color: var(--text-secondary);
 }
 
-/* Waveform grid styles */
 .waveformGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -172,7 +170,6 @@
   font-weight: 500;
 }
 
-/* Make knobs row horizontal */
 .controls {
   display: flex;
   flex-direction: column;
@@ -189,10 +186,9 @@
 .knobWrapper {
   text-align: center;
   flex: 1;
-  min-width: 0; /* Allow shrinking below content size */
+  min-width: 0;
 }
 
-/* Horizontal modulation section */
 .modulationSection {
   background-color: var(--bg-tertiary);
   border-radius: 6px;
@@ -250,7 +246,6 @@
   margin-top: 0.8rem;
 }
 
-/* Media queries */
 @media (max-width: 1024px) {
   .oscillatorSection {
     flex-direction: column;

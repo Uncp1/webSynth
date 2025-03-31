@@ -107,7 +107,6 @@
   margin: 1rem 0 1.5rem;
 }
 
-/* Original filter styles */
 .filter__controls {
   display: flex;
   justify-content: center;
@@ -135,7 +134,6 @@
   text-align: center;
 }
 
-/* Media queries */
 @media (max-width: 768px) {
   .filter__controls,
   .distortionControls {

@@ -14,7 +14,6 @@ interface KeyProps {
   showComputerKeys: boolean;
 }
 
-// Find computer key for a given note
 const findComputerKey = (
   note: string,
   keyMapping: Record<string, string>
@@ -27,7 +26,6 @@ const findComputerKey = (
   return null;
 };
 
-// Individual key component
 const Key: React.FC<KeyProps> = ({
   note,
   isBlack,
@@ -49,7 +47,6 @@ const Key: React.FC<KeyProps> = ({
       onMouseDown={() => onNoteOn(note)}
       onMouseUp={() => onNoteOff(note)}
       onMouseEnter={(e) => {
-        // If mouse button is pressed when entering, trigger note
         if (e.buttons === 1) {
           onNoteOn(note);
         }
@@ -85,17 +82,14 @@ const Keyboard: React.FC = () => {
   const [computerKeyboardEnabled, setComputerKeyboardEnabled] = useState(false);
   const [activeNotes, setActiveNotes] = useState<Set<string>>(new Set());
 
-  // Ref for tracking active computer keys
   const activeKeys = useRef<Set<string>>(new Set());
 
-  // Start audio context and trigger note
   const handleNoteOn = async (note: string) => {
     if (!audioStarted) {
       await Tone.start();
       setAudioStarted(true);
     }
 
-    // Add to active notes for visual feedback
     setActiveNotes((prev) => {
       const updated = new Set(prev);
       updated.add(note);
@@ -106,9 +100,7 @@ const Keyboard: React.FC = () => {
     synth2.triggerAttack(note);
   };
 
-  // Release note
   const handleNoteOff = (note: string) => {
-    // Remove from active notes
     setActiveNotes((prev) => {
       const updated = new Set(prev);
       updated.delete(note);
@@ -148,10 +140,8 @@ const Keyboard: React.FC = () => {
     // Calculate black keys
     for (let octave = baseOctave; octave <= baseOctave + 1; octave++) {
       whiteNotes.forEach((noteName) => {
-        // Black keys don't exist after E and B
         if (noteName !== 'E' && noteName !== 'B') {
           const note = `${noteName}#${octave}`;
-          // Find the left position (between white keys)
           const whiteKeyIndex = whiteNotes.indexOf(noteName);
           const octaveOffset = (octave - baseOctave) * 7;
           const left = (octaveOffset + whiteKeyIndex) * 40 + 25;
@@ -212,7 +202,6 @@ const Keyboard: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
-    // Cleanup
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
@@ -248,7 +237,6 @@ const Keyboard: React.FC = () => {
     }
   };
 
-  // Reset all notes (panic button)
   const handlePanic = () => {
     synth1.releaseAll();
     synth2.releaseAll();
@@ -298,9 +286,7 @@ const Keyboard: React.FC = () => {
           className={styles.keyboard}
           style={{ width: `${whiteKeys.length * 40}px` }}
         >
-          {/* Render white keys first (lower z-index) */}
           {whiteKeys.map(({ note, left }) => {
-            // Find matching computer key if any
             const computerKey = findComputerKey(note, keyMapping);
 
             return (
@@ -318,9 +304,7 @@ const Keyboard: React.FC = () => {
             );
           })}
 
-          {/* Render black keys on top */}
           {blackKeys.map(({ note, left }) => {
-            // Find matching computer key if any
             const computerKey = findComputerKey(note, keyMapping);
 
             return (

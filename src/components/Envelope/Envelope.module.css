@@ -133,7 +133,6 @@
   margin-right: 0.2rem;
 }
 
-/* Media queries for responsiveness */
 @media (max-width: 768px) {
   .adsrSection {
     flex-direction: column;
